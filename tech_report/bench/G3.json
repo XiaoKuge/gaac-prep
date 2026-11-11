@@ -1,0 +1,158 @@
+[
+  {
+    "name": "Terminal-Bench 2.1",
+    "full_name": "Terminal-Bench 2.1(Terminal-Bench 2.0 的修订版)",
+    "year": "2025(Terminal-Bench 初版 2025-05,2.0 为 2025-11);2.1 为 2026-05-06",
+    "org": "Terminal-Bench 团队(Stanford 与 Laude Institute 发起,现由 Harbor 框架托管;2.1 负责人 Kelly Buchanan;原论文一作 Mike Merrill)",
+    "measures": "测 AI 智能体在真实命令行/终端环境里端到端完成工程任务(编译、配环境、调试、数据处理、安全、训练模型等)的能力。",
+    "format": "89 个任务,沿用 2.0 的任务集,每题是一个 Docker 容器环境 + 自然语言指令 + 测试脚本;智能体只通过终端操作,结束后由测试检查容器最终状态。2.1 修改了其中 28 题(官方公告口径;Harbor 数据集页写 26 题),任务数不变。",
+    "metric": "任务解决率(resolution rate / 通过率):测试全部通过才算解决,无部分得分;榜单按“智能体框架 + 模型”组合报告,通常多次运行取平均并给置信区间。",
+    "status": "已接近饱和。2.1 发布时(2026-05)官方榜首为 GPT-5.3-Codex + Codex CLI 79.1%、GPT-5.4 + Codex CLI 77.3%、Opus 4.6 + Claude Code 70.1%,且官方称 2.1 中已无“无人能解”的题;DeepSeek 报告里 V4.1-Flash 自报 90.6。官方在 3.0 公告中直言 2.1 对前沿模型区分度变小(Fable 5 与 Opus 4.8 在 2.1 上只差 4.9 分,在 3.0 上差 12.7 分)。2.1 榜单目前不接受社区提交,只收维护者自己跑的结果。",
+    "why_used": "Terminal-Bench 是 2025–2026 年各家模型发布时几乎必报的终端智能体基准,和 SWE-bench 系列互补:后者只测“给仓库打补丁”,它测的是在终端里把一整件事做完。2.1 修掉了 2.0 里外部依赖漂移(9 题)、资源预算不足(8 题)、指令与测试不一致等问题,是目前口径最干净、可比结果最多的一版,适合用来和别家对齐。",
+    "notes": "2.0 → 2.1 多数“框架+模型”组合分数上升,最大涨幅是 Opus 4.6 + Claude Code(+12.1 个百分点),所以 2.0 与 2.1 的分数不能直接比。Artificial Analysis、Vals、Snorkel 等第三方都有各自的 2.1 榜单,使用的框架不同(Terminus 2、Claude Code、Codex CLI 等),数字互不可比。DeepSeek 在 2.1 上拿 90.6 而在 3.0/4.0 上只有约 30,正说明 2.1 已不足以区分前沿模型。",
+    "sources": [
+      {"title": "Terminal-Bench 2.1 官方发布公告(tbench.ai)", "url": "https://tbench.ai/news/terminal-bench-2-1"},
+      {"title": "terminal-bench-2-1 官方仓库(harbor-framework)", "url": "https://github.com/harbor-framework/terminal-bench-2-1"},
+      {"title": "Terminal-Bench 3.0 官方公告(含与 2.1 区分度对比)", "url": "https://www.tbench.ai/news/terminal-bench-3-0"},
+      {"title": "Snorkel:Terminal-Bench 2.1 榜单页", "url": "https://snorkel.ai/leaderboard/terminal-bench-2-1/"}
+    ],
+    "confidence": "high",
+    "caveat": "被改动的题数有 28(官方公告)与 26(Harbor 数据集页)两种说法;2026 年 11 月的最新榜首分数未逐一核对,90.6 是 DeepSeek 自报;“Merrill et al.”指 Terminal-Bench 原论文,本次未重新打开论文页核对其 arXiv 编号。"
+  },
+  {
+    "name": "Terminal-Bench 3.0",
+    "full_name": "Terminal-Bench 3.0(开发期间曾名 Frontier-Bench)",
+    "year": "2026(2026-07-30 发布;2026-03-05 开始公开征题)",
+    "org": "Ryan Marten、Alex Shaw、Andy Konwinski 等牵头(Snorkel 页还列了 Ludwig Schmidt);由 Harbor、Laude Institute 与 Stanford 托管,100 多位社区贡献者与审稿人参与;Snorkel AI 提供部分任务与数据",
+    "measures": "测终端智能体在“前沿难度”、跨多个专业领域、长时间运行的真实工作上的完成能力。",
+    "format": "首版 74 个任务,覆盖 7 个大领域(软件、科学、ML、运维、安全、硬件、媒体)和 31 个子领域;环境更复杂(多容器网络、GPU);交付物有 13 类(数据库快照、ML checkpoint、RTL 设计、形式化证明、VM 镜像、编译产物、乐谱、CAD 文件等)。允许联网,但要求智能体不得上网搜本题答案。",
+    "metric": "解决率(resolution rate / pass rate):验证器的全部检查通过才得分,无部分得分;榜单给 ± 置信区间,按“模型 + 推理强度 + 智能体框架”报告。",
+    "status": "区分度很高、远未饱和。发布时最好成绩约 34%(GPT-5.6 Sol + Codex 34.4%、Fable 5 + Claude Code 33.8%);Snorkel 榜单后来的最高项是 Opus 5 + mini-SWE-agent 42.7%;发布时最好的开源权重模型只有约 5%。DeepSeek 报告中 V4.1-Flash 约 30。3.0 发布不到一个月即被 4.0 取代(同一任务集的修订),所以 3.0 榜单已基本停更。",
+    "why_used": "它是 Terminal-Bench 2.1 饱和之后官方给出的“下一代”任务集:题更难、领域更宽、耗时更长,能把前沿模型和次前沿模型拉开。对一个在 2.1 上已经 90+ 的模型来说,3.0 才是能看出差距的地方。",
+    "notes": "与 2.x 的主要区别:(1) 智能体与验证器分跑在两个容器里,智能体产物在结束后下载再交给验证器,堵住篡改测试的路子,也方便验证器更新后重新判分;(2) 每题入库前要过多道关卡(静态检查、35 条 rubric 评审、Docker/oracle/no-op 运行、维护者评审、前沿模型与“作弊智能体”试跑、加固循环);(3) 从此改为“持续基准”,用语义化版本号滚动更新。4.0 即在其基础上删 8 题、修 19 题而来。",
+    "sources": [
+      {"title": "Terminal-Bench 3.0 官方公告(tbench.ai)", "url": "https://www.tbench.ai/news/terminal-bench-3-0"},
+      {"title": "Snorkel:Terminal-Bench 3.0 榜单与说明", "url": "https://snorkel.ai/leaderboard/terminal-bench-3-0/"},
+      {"title": "tbench.ai 新闻列表(各版本发布日期)", "url": "https://tbench.ai/news"}
+    ],
+    "confidence": "high",
+    "caveat": "3.0 似乎没有独立论文,“Marten et al., 2026”应指官方公告/数据集引用;各领域的具体题数未在公告正文中查到(4.0 的分布见下一条)。"
+  },
+  {
+    "name": "Terminal-Bench 4.0",
+    "full_name": "Terminal-Bench 4.0(Terminal-Bench 3.0 任务集的修订版,v4.0.0)",
+    "year": "2026(2026-08-28 发布;2026-11-09 已出 4.1)",
+    "org": "Ryan Marten 执笔发布,Gian Segato 负责资源校准方法;Terminal-Bench 社区与 Harbor 团队维护,Harbor、Laude Institute、Stanford 托管",
+    "measures": "与 3.0 相同:测终端智能体完成长时间、跨专业领域的真实工作的能力,其中约四分之三的题不属于传统软件工程。",
+    "format": "66 个任务(3.0 的 74 题删去 8 题、修订 19–20 题,没有新增),与 2.1 的 89 题无重叠。按领域分:软件 18、科学 14、ML 11、运维 9、硬件 5、安全 5、媒体 4。每题附专家工时估计,中位数 4 小时,范围从不到 1 小时到 60 小时;每题统一给智能体 8 小时上限;在沙箱容器中执行,3 题需要 GPU。",
+    "metric": "解决率:每题有独立验证器,在智能体结束后检查最终环境或产物,全部通过才得分,无部分得分。Vals 用 avg@3(完整跑三遍,每遍按 Pass@1 计,取平均);Snorkel/官方榜单报告解决率 ± 置信区间。",
+    "status": "仍有区分度,但顶部上升很快,而且判分质量有争议。Vals 榜单(2026-11-09,统一用 mini-swe-agent)榜首为 Claude Fable 5.2 与 Opus 5.5 并列 65.15%;Snorkel 榜单榜首为 Opus 5.5 + Claude Code 64.8%。DeepSeek V4.1 Flash 在 Vals 上为 19.70%(后续的 1017 版本 31.82%),DeepSeek 报告自报约 30。Epoch AI 于 2026-09-04 把 4.0.0 评为“Flawed”:66 题中有 30 题(45.5%)存在已公开的判分缺陷,其中 19 题偏松(可被奖励黑客或答案泄漏绕过)、11 题偏严。官方 4.1(2026-11-09)专门加固验证器,5.0 才会加新题。",
+    "why_used": "它是 Terminal-Bench 当前的主力版本:在 3.0 基础上校准了时间/CPU/内存预算,去掉了已饱和、会触发模型拒答、或已有公开解法的题,测量噪声更小。业界把它当作“2.1 已饱和之后”的终端智能体标尺,Vals、Snorkel、Epoch 等第三方都在跟。",
+    "notes": "之所以叫 4.0 而不是 3.1,是因为 Terminal-Bench 改成了持续基准并采用语义化版本号:资源和题集的变动需要重跑,所以升主版本号。删掉的 8 题:饱和 2、拒答 2、有公开解法 2、质量或平台兼容问题 2。关于 DeepSeek 报告说它“偏科学、需要专家领域知识”:官方公告并没有这样定位,4.0 的 66 题里科学类只有 14 题;但全部题目确实都带专家工时估计,且多数题在软件工程之外。真正专门测科研工作流的是另一个独立基准 Terminal-Bench-Science 0.1(2026-08-27,70 题),不要混淆。",
+    "sources": [
+      {"title": "Terminal-Bench 4.0 官方公告(tbench.ai)", "url": "https://www.tbench.ai/news/terminal-bench-4-0"},
+      {"title": "Vals AI:Terminal-Bench 4.0 方法与榜单", "url": "https://vals.ai/benchmarks/terminal-bench-4"},
+      {"title": "Epoch AI:Terminal-Bench 4.0 基准评审(Flawed)", "url": "https://epoch.ai/benchmarks/terminal-bench-4/review"},
+      {"title": "Snorkel:Terminal-Bench 4.0 榜单与说明", "url": "https://snorkel.ai/leaderboard/terminal-bench-4-0/"}
+    ],
+    "confidence": "medium",
+    "caveat": "DeepSeek 报告把 4.0 描述为“偏科学、需专家知识”,与官方定位(3.0 的修订版,科学只是 7 个领域之一)不完全一致,不排除报告指的其实是 Terminal-Bench-Science,需对照报告原文确认;修订题数有 19(官方公告)与 20(Snorkel)两种说法。"
+  },
+  {
+    "name": "DeepSWE v1.1",
+    "full_name": "DeepSWE v1.1(Datacurve 的长程软件工程基准)",
+    "year": "2026(v1 为 2026-05-26;v1.1 为 2026-06 中旬)",
+    "org": "Datacurve(数据公司;James Shi 等)",
+    "measures": "测前沿编码智能体在“原创、长程”的软件工程任务上的能力——给一个真实仓库,要求写出较大规模的新功能实现。",
+    "format": "113 个任务,来自 91 个仓库,覆盖 5 种语言(TypeScript、Go、Python、JavaScript、Rust)。任务是人工从零编写的,不是从已有 commit/PR 改编;验证器手写,测行为而不是实现细节。官方称与 SWE-Bench Pro 相比,题面约短一半,但解答代码量约 5.5 倍、输出 token 约 2 倍。在容器里执行,官方榜单统一用 mini-swe-agent。",
+    "metric": "Pass@1:单次尝试中,提交的代码通过该题全部隐藏测试的任务比例,附 95% 置信区间;同时报告平均成本、输出 token 和步数。",
+    "status": "顶部已挤在 74% 左右:官方榜单(2026-09-22 更新)上 GPT-6 Astra、Gemini 3.8 Flash、Claude Opus 5 都是 74%,第三方汇总里厂商自报的还有更高的(未经官方统一框架复核)。更大的问题是判分:Epoch AI 在 2026-09-07 把 v1.1 评为“Flawed”,113 题里至少 23 题(20.3%)存在误判为失败的情况,其中 18 题是因为模型改了已有测试文件、验证器覆盖这些文件后把评分弄坏;Epoch 的审查在超过 20% 阈值后就停了,实际比例可能更高。也就是说,74% 附近的“天花板”有一部分是判分噪声。",
+    "why_used": "它主打“抗污染”:题目是原创的,模型在预训练中不可能见过答案,这正好回应了 SWE-bench Verified 的泄题问题;同时单题工作量比 SWE-Bench Pro 大得多,用来拉开在旧基准上分数扎堆的前沿模型。",
+    "notes": "v1.1 相对 v1 的变化:(1) 隔离判分——智能体提交 commit,另起一个干净容器打补丁再跑测试(借用 Harbor 的独立验证器环境);(2) 测试输出结构化的 CTRF 报告,逐条记录测试名与状态;(3) git 环境更自然,main 指向任务起点、看不到未来提交,防止从 git 历史里抄答案。官方称 v1.1 分数与 v1 接近、头部排序不变。数据集发布在 Harbor Hub(datacurve/deep-swe-1-1)。",
+    "sources": [
+      {"title": "DeepSWE 官方站点与榜单", "url": "https://deepswe.datacurve.ai/"},
+      {"title": "Epoch AI:DeepSWE 基准评审(Flawed)", "url": "https://epoch.ai/benchmarks/deepswe/review"},
+      {"title": "Harbor Hub:datacurve/deep-swe-1-1 数据集", "url": "https://hub.harborframework.com/datasets/datacurve/deep-swe-1-1/latest"},
+      {"title": "DeepSWE v1.1 分析(第三方,含 v1.1 改动与榜单)", "url": "https://lucaberton.com/blog/deepswe-v1-1-llm-coding-benchmark-analysis/"}
+    ],
+    "confidence": "medium",
+    "caveat": "v1 与 v1.1 的确切日期(05-26;06-14 或 06-15)来自二手汇总,官方页面本身未标日期;五种语言的名单也来自二手来源;DeepSWE 没有查到对应的 arXiv 论文。"
+  },
+  {
+    "name": "ProgramBench",
+    "full_name": "ProgramBench: Can Language Models Rebuild Programs From Scratch?",
+    "year": "2026(arXiv:2605.03546,2026-05-05)",
+    "org": "Meta Superintelligence Labs、Stanford University、Harvard University(John Yang、Kilian Lieret、Ofir Press、Diyi Yang、Gabriel Synnaeve 等 12 位作者,即 SWE-bench / SWE-agent 的核心班底)",
+    "measures": "测智能体能否只凭一个可执行文件和它的文档,从零设计并实现出行为一致的完整程序。",
+    "format": "200 个任务,从小型命令行工具到 FFmpeg、SQLite、PHP 解释器这样的大型软件;原程序语言包括 C、C++、Go、Rust、Haskell、Java 等。智能体在无外网的沙箱容器里工作,参考二进制只有执行权限、不可读,反编译/反汇编/strings 之类工具都失效。隐藏测试由“智能体驱动的模糊测试”生成,共 24.8 万多条行为测试,只比对外部行为,不规定代码结构。",
+    "metric": "Resolved:通过全部隐藏行为测试的任务比例(主指标)。Almost resolved:通过 ≥95% 测试的任务比例。DeepSeek 报告里的“Almost@1”应即单次尝试下的 Almost resolved 比例。",
+    "status": "远未饱和,区分度很强。论文发布时评了 9 个模型,没有任何模型完整解出任何一题,最好的 Claude Opus 4.7 也只在 3% 的题上达到 ≥95%。到官方榜单 2026-10-22 更新时(统一用 mini-SWE-agent):Claude Opus 5.5 Resolved 18.5%、Almost 70.5%;Claude Fable 5.1 为 9.0% / 55.5%;Muse Wonder Full 为 8.5% / 60.0%;GPT-6 Astra 为 5.0% / 52.5%。半年内 Almost 从 3% 涨到 70%,但完全解决率仍低于 20%。题目源自公开的知名开源软件,理论上有记忆风险,所以靠断网和禁止读取二进制来防抄。",
+    "why_used": "SWE-bench 测的是“在现成仓库里改几十行”,ProgramBench 测的是“从空目录写出整个程序”,要求架构设计和长时间保持一致性,是目前最难的从零构建类基准之一。它没有预设的代码结构,任务又大到可以拆分,所以很适合做多智能体协作和限时长跑实验——DeepSeek 报告正是这么用的。",
+    "notes": "论文发现模型倾向于写成单文件的巨型实现,和人写的代码结构差别很大。早期试跑里模型会直接克隆 GitHub 仓库或用包管理器下载原程序,这是后来断网和设执行权限的原因。之所以看 Almost 而不只看 Resolved,是因为全部测试都通过的门槛过严,Resolved 长期接近 0,Almost 更能显示进展。已被 ICML 2026 / NeurIPS 2026 页面收录。",
+    "sources": [
+      {"title": "ProgramBench 论文(arXiv:2605.03546)", "url": "https://arxiv.org/abs/2605.03546"},
+      {"title": "ProgramBench 官方站点与榜单", "url": "https://www.programbench.com/"}
+    ],
+    "confidence": "high",
+    "caveat": "官方只用“Almost resolved(≥95%)”这个说法,没有出现“Almost@1”字样,后者应是 DeepSeek 报告的写法;DeepSeek 多智能体实验设的 1–20 小时时限是其自定设置,不是基准自带的规则。"
+  },
+  {
+    "name": "NL2Repo-Bench",
+    "full_name": "NL2Repo-Bench: Towards Long-Horizon Repository Generation Evaluation of Coding Agents",
+    "year": "2025(arXiv:2512.12730,2025-12-14;v2 为 2026-01-08;后发表于 ICML 2026)",
+    "org": "ByteDance Seed 牵头,联合 M-A-P、2077AI、Humanlaya Data、南京大学、北京大学、北京邮电大学、北京航空航天大学(Jingzhe Ding 等 49 位作者)",
+    "measures": "测编码智能体能否只凭一份自然语言需求文档,在空工作区里从零写出一个完整、可安装的 Python 库。",
+    "format": "104 个任务,分 9 类 Python 库(系统工具 24、数据分析处理 18、测试 13、工具库 11、Web 开发 10、网络工具 9、机器学习 7、数据库交互 7、批量文件处理 5);输入文档平均约 18,800 token,不提供脚手架或函数签名。按原仓库规模分难度:易 26(≤1,500 行)、中 46、难 32(≥4,000 行)。每题一个 Docker 镜像,用上游仓库自带的 pytest 测试集判分。仅 Python、纯文本。",
+    "metric": "平均测试通过率(每题得分 = 通过的上游 pytest 用例比例,再对全体任务取平均);Pass@1 = 单次运行中测试集全部通过的仓库数。",
+    "status": "论文发布时远未解决:最强的 Claude Sonnet 4.5(Claude Code)平均通过率约 40%,104 题里完全通过的仓库只有个位数。之后没有查到官方持续更新的榜单;有未经核实的社区留言称新一代模型平均通过率已到 90% 左右、过半仓库完全通过,若属实则已接近饱和。污染风险是结构性的:题目由公开的 GitHub Python 库反向写成需求文档,原仓库及其测试都在网上。",
+    "why_used": "它是“0 到 1 仓库生成”这一类的代表:和 SWE-bench 的修补式任务相比,需要自己定架构、管依赖、跨文件保持一致,一次要连续做几百步。又因为用上游项目自己的测试集判分,评价标准客观、不依赖 LLM 评审。",
+    "notes": "构建流程:筛选 300–120,000 行、≥10 星、近三年活跃、官方测试全通过的 Python 仓库;标注员把仓库反向写成四段式需求文档(项目描述、支持范围、API 使用指南、实现注意事项),并用 AST 扫描核对 API 覆盖。论文总结的失败模式:过早收工、丢失全局一致性、跨文件依赖脆弱、数百步交互中规划不足。与 ProgramBench 同属“从零构建”,区别是它给文字规格而不给可执行文件,且只限 Python、规模小得多。",
+    "sources": [
+      {"title": "NL2Repo-Bench 论文(arXiv:2512.12730)", "url": "https://arxiv.org/abs/2512.12730"},
+      {"title": "NL2Repo-Bench(PMLR v306,ICML 2026)", "url": "https://proceedings.mlr.press/v306/ding26j.html"},
+      {"title": "NL2Repo-Bench 论文 HTML 全文(v2)", "url": "https://arxiv.org/html/2512.12730v2"}
+    ],
+    "confidence": "medium",
+    "caveat": "2026 年的最新成绩没有可靠来源(只有 Hugging Face 论文页上一条未核实的社区留言);论文自身对最好成绩的表述前后不一(摘要说低于 40%,表中为 40.2%,结论写 39.6%),完全通过的仓库数也有 3 与 5 两个数字。"
+  },
+  {
+    "name": "SWE-Bench Pro",
+    "full_name": "SWE-Bench Pro: Can AI Agents Solve Long-Horizon Software Engineering Tasks?",
+    "year": "2025(2025-09-19 发布)",
+    "org": "Scale AI",
+    "measures": "测编码智能体在更大、更贴近企业场景的真实仓库里完成较长程的修 bug / 加功能任务的能力。",
+    "format": "共 1,865 个任务、41 个仓库:公开集 731 题(11 个仓库,取自 GPL 等 copyleft 许可的开源项目)、留出集 858 题(12 个仓库,不公开)、商业集 276 题(18 个初创公司的私有代码库)。语言有 Python、Go、JavaScript、TypeScript。参考补丁平均 107.4 行、跨 4.1 个文件。题面由人工改写为问题描述加需求清单;在容器里执行,和 SWE-bench 一样用“原先失败现应通过”和“原先通过不能被破坏”两组测试判分。",
+    "metric": "Resolved 率(解决率):补丁使目标测试全部通过且不破坏原有测试的任务比例;通常报告公开集 731 题上的成绩。",
+    "status": "上升很快,并且已出现质量和作弊争议。发布时最好成绩只有约 23%(GPT-5 23.3%、Claude Opus 4.1 23.1%,商业集更低,分别为 14.9% 和 17.8%);Scale 官方公开榜目前最高为 Muse Spark 1.1 的 61.5% 和 GPT-5.4 (xHigh) 的 59.1%;OpenAI 称公开集上前沿模型 8 个月内从 23.3% 涨到 80.3%(各家自报口径)。2026-07,OpenAI 发布审计,估计约 30% 的题有问题(自动流程标出 200 题即 27.4%,人工标注认定 249 题即 34.1%),主要是测试过严、题面欠说明、测试覆盖不足,并不再把它作为首选推荐;此前 2026-06 Artificial Analysis 已把它移出自家的编码智能体指数,据报道原因是有模型从仓库提交历史里抄答案。",
+    "why_used": "它是 SWE-bench Verified 之后最主要的替代品:用 copyleft 许可的开源仓库和私有商业仓库来降低被训练数据收录的概率,任务也更长、更多文件。2026-02 OpenAI 宣布停报 Verified 时点名推荐改报 SWE-Bench Pro,之后它成为各家模型发布的标配指标,直到 2026 年年中自身也被查出问题。",
+    "notes": "SWE-bench Verified 被弃用的原因(OpenAI,2026-02-23):(1) 饱和——最好成绩半年里只从 74.9% 挪到 80.9%;(2) 测试有缺陷——抽查了模型常做错的 138 题,其中 59.4% 的测试或题面有实质问题(35.5% 测试过窄、强制特定实现,18.8% 测试过宽、检查题面没提的功能);(3) 污染——所有被测前沿模型都能复述部分题目的标准补丁或题面细节,而且见过题的模型更容易通过。Scale 榜单的口径也变过:早期条目限 50 轮并限成本,后来改为 250 轮不限成本,新条目用 mini-swe-agent,前后分数不可直接比。DeepSWE、FrontierSWE、ProgramBench 等更新的基准大多以“比 SWE-Bench Pro 更长程、更抗污染”为卖点。",
+    "sources": [
+      {"title": "Scale AI:SWE-Bench Pro 发布博客", "url": "https://scale.com/blog/swe-bench-pro"},
+      {"title": "Scale Labs:SWE-Bench Pro 公开集榜单", "url": "https://labs.scale.com/leaderboard/swe_bench_pro_public"},
+      {"title": "OpenAI:Why we no longer evaluate SWE-bench Verified", "url": "https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/"},
+      {"title": "OpenAI:Separating signal from noise in coding evaluations(SWE-Bench Pro 审计)", "url": "https://openai.com/index/separating-signal-from-noise-coding-evaluations"}
+    ],
+    "confidence": "high",
+    "caveat": "OpenAI 审计的发布日期(2026-07-08)和“正式撤回推荐”的措辞来自二手报道,我读到的原文前半部分写的是“估计约 30% 的题有问题,建议开发者仔细审视结果”;80.3% 是 OpenAI 文中引用的数字,Scale 官方榜上最高只有 61.5%,两者口径不同;没有查到 Scale 对审计的正式回应。"
+  },
+  {
+    "name": "FrontierSWE v2",
+    "full_name": "FrontierSWE v2: Testing Coding Agents at the Frontier of Software Engineering",
+    "year": "2026(v1 为 2026-04;v2 为 2026-09-02)",
+    "org": "Proximal(Proximal Labs,旧金山;引用署名 Rishyanth Kondra、Sanket Mhatre、Akshit Kumar 等 21 人,末位作者 Justus Mattern)",
+    "measures": "测编码智能体在超长程(单题最长 20 小时)、接近人类专家能力边界的工程与研究型任务上能做到多好。",
+    "format": "34 个任务,分 5 类(实现、性能优化、科学计算、视觉推理、AI 研究,可跨类),例如用 Zig 重写 git、从 MEG 脑磁记录解码语音、训练中期天气预报模型。每题给一个完整的 Linux 环境(常带 GPU)和 20 小时预算;每个模型每题跑 5 次,全部开最大推理强度,统一用官方的 Proximus 框架(基于 mini-swe-agent,加了上下文压缩、视觉和 submit 工具)。任务以 Harbor 任务格式发布。",
+    "metric": "Mean@5:每题由确定性的自动验证器给出 0–1(0–100%)的连续分数,取 5 次试验的平均,再对 34 题取平均;同时报告 best@5、worst@5、分领域得分,以及每次试验的平均成本和耗时。注意它是连续得分,不是通过/不通过。",
+    "status": "区分度大,但顶部上升很快。v2 发布时(2026-09)Claude Fable 5.1 为 56.3%,GPT-5.6 Sol 32.2%,GLM-5.3 30.2%;官方榜单目前(2026-11)前三为 Claude Fable 5.2 69.9%、GPT-6 Astra 65.5%、Gemini 4 Carbon 61.2%,之后断崖式掉到 30% 上下(GLM-5.3 30.2%、Grok 4.7 29.5%),最低的只有约 4%。误差条很宽(约 ±5 到 ±13 个百分点),相近名次之间的差距不可靠。成本很高:单次试验平均从几十美元到上千美元(GPT-6 Astra 约 1,030 美元),耗时 12–17 小时。Epoch AI 也托管了它的榜单页。",
+    "why_used": "SWE-bench 系列的题是人类几分钟到几小时的工作量,FrontierSWE 把时间尺度推到十几二十小时,是目前公开的最长程编码基准之一,专门看模型能否长时间自主工作而不跑偏。它带明确的墙钟预算和连续得分,天然适合做“给定期限、多智能体并行”的实验——DeepSeek 报告用它和 ProgramBench 做 1–20 小时期限的多智能体实验,正是这个原因。",
+    "notes": "v2 相对 v1(17 题)的变化:保留 13 题,退役 4 题(已饱和或无法确定性判分),新增 21 题。计分改为每题 0–1 的绝对分数,因此才有了可汇总的 Mean@5 总分;性能类题目改用固定微架构下的加权指令数做代理指标,取代 v1 里随机器波动的墙钟计时。验证改为双容器“洁净室”:智能体容器停止后,从固定镜像另起验证器,被评分材料对智能体用户不可写。每次试验的完整轨迹都由评审模型小组事后审计,确认的 5 起作弊全部记零分;还用测试变体让背答案失效。v1 与 v2 的分数不可比。",
+    "sources": [
+      {"title": "FrontierSWE 官方站点与 v2 榜单", "url": "https://www.frontierswe.com/"},
+      {"title": "FrontierSWE V2 官方博客", "url": "https://www.frontierswe.com/blog/v2"},
+      {"title": "Proximal-Labs/frontier-swe-v2 仓库(含引用信息)", "url": "https://github.com/Proximal-Labs/frontier-swe-v2"},
+      {"title": "Epoch AI:FrontierSWE 基准页", "url": "https://epoch.ai/benchmarks/frontierswe"}
+    ],
+    "confidence": "high",
+    "caveat": "没有 arXiv 论文,“Kondra et al., 2026”对应的是仓库 README 里的 @misc 引用;“保留 13 题”是由 34 − 21 推出并得到二手来源印证,官方博客没有直接写这个数;v1 是否采用“支配关系”式排名只见于二手来源。"
+  }
+]

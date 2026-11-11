@@ -1,0 +1,280 @@
+[
+  {
+    "name": "AGIEval",
+    "full_name": "AGIEval: A Human-Centric Benchmark for Evaluating Foundation Models",
+    "year": "2023",
+    "org": "Microsoft(微软研究院等)",
+    "measures": "用真实的人类升学与职业资格考试题,测模型的综合理解、知识、推理与计算能力。",
+    "format": "20 个任务,取自中国高考、美国 SAT、LSAT、中国司法考试、公务员考试(LogiQA)、GRE/GMAT 数学(AQuA-RAT)等;中英双语;18 个任务为选择题,2 个为填空题(高考数学填空、MATH)。v1.1 版约 8,000 题。纯文本,不涉及执行环境。",
+    "metric": "准确率(选择题按选项判对错;填空题用 EM 精确匹配),通常报各任务平均,或分英文/中文两个子集平均。",
+    "status": "已属旧基准。题目全部来自公开考试,原题与解析在网上大量流传,污染风险高;前沿对话模型的分数已很高,区分度主要体现在基座模型和中小模型之间。近两年的旗舰模型发布已很少单独报它的分数,未查到可靠的 2026 年榜首数字。",
+    "why_used": "它是最早把「对标人类考生」做成统一套件的基准之一,题目有人类平均分和高分考生成绩作参照。因为同时含中文和英文考试题,中国厂商常用它做基座模型的综合理解对比。few-shot 选择题的形式不依赖对话模板,适合直接评基座模型。",
+    "notes": "与 MMLU、C-Eval 同属「考试型知识与推理」一类,但偏重推理和阅读而非学科知识点。其中包含的 MATH 填空子集与独立的 MATH 基准同源。",
+    "sources": [
+      {"title": "AGIEval 论文(arXiv:2304.06364)", "url": "https://arxiv.org/abs/2304.06364"},
+      {"title": "AGIEval 官方仓库", "url": "https://github.com/ruixiangcui/AGIEval"}
+    ],
+    "confidence": "medium",
+    "caveat": "基本信息凭已有知识写成,未重新联网核对;v1.1 的精确题量(约 8,062)和 2026 年最高分未核实。"
+  },
+  {
+    "name": "MMLU-Pro",
+    "full_name": "MMLU-Pro: A More Robust and Challenging Multi-Task Language Understanding Benchmark",
+    "year": "2024",
+    "org": "TIGER-Lab(滑铁卢大学)等",
+    "measures": "跨学科的知识与推理能力,比原版 MMLU 更强调推理、更难靠猜。",
+    "format": "12,032 道选择题,覆盖 14 个学科大类(数学、物理、化学、法律、工程、经济、健康、心理、商科、生物、哲学、计算机、历史、其他);选项从 4 个扩到最多 10 个(少数题在人工复核时被删减选项)。题目来自原 MMLU 筛选后的子集,加上 STEM 网站、TheoremQA、SciBench 的新题。英文,纯文本。",
+    "metric": "准确率;论文标准设置是 5-shot CoT。10 个选项使随机猜对率从 25% 降到 10%。",
+    "status": "对前沿模型已接近饱和:2026 年各第三方榜单上的最高分集中在 89%–90% 左右,前几名相差约 1 个百分点,已难以区分旗舰模型。对基座模型和中小模型仍有区分度。发布时最好的 GPT-4o 只有 72.6%。",
+    "why_used": "原版 MMLU 在 2024 年已到 90% 上下且有不少错题和污染,MMLU-Pro 是公认的接班者:它去掉了简单和有噪声的题,增加了需要推理的题,并降低了模型对提示词写法的敏感度(论文报告由 MMLU 的 4%–5% 降到约 2%)。因此它成了 2024–2025 年模型发布里「通用知识」一栏的默认项目。",
+    "notes": "MMLU 的升级版,NeurIPS 2024 Datasets & Benchmarks 收录。扩充选项时用了 GPT-4 生成干扰项,再由专家复核;不同数据集修订版的分学科题量略有出入。",
+    "sources": [
+      {"title": "MMLU-Pro 论文(arXiv:2406.01574)", "url": "https://arxiv.org/abs/2406.01574"},
+      {"title": "TIGER-Lab/MMLU-Pro 数据集卡片", "url": "https://huggingface.co/datasets/TIGER-Lab/MMLU-Pro"},
+      {"title": "BenchLM 的 MMLU-Pro 榜单快照", "url": "https://benchlm.ai/benchmarks/mmlu-pro"}
+    ],
+    "confidence": "high",
+    "caveat": "2026 年的最高分来自第三方聚合榜单的快照,各家领先者不一致(89.6%–90.1%),只能当作大致水平。"
+  },
+  {
+    "name": "C-Eval",
+    "full_name": "C-Eval: A Multi-Level Multi-Discipline Chinese Evaluation Suite for Foundation Models",
+    "year": "2023",
+    "org": "上海交通大学、清华大学、爱丁堡大学",
+    "measures": "中文语境下的学科知识与推理能力。",
+    "format": "13,948 道四选一选择题,覆盖 52 个学科、4 个难度层级(初中、高中、大学、专业资格考试);另有 C-Eval Hard 子集(8 个需要较强推理的数理科目)。中文,纯文本。每科分 dev(5 题,作 few-shot 示例)、val、test,test 答案不公开,需提交到官网评分。",
+    "metric": "准确率(各学科平均);常见设置是 5-shot,答案只取选项字母。",
+    "status": "对主流模型已接近饱和,官方榜单头部分数多年前就到了 90% 上下。题目取自中国各类模拟题和考试题,虽然作者刻意选了模拟题并隐藏 test 答案,val 集公开已久,污染和刷榜的质疑一直存在。对基座模型的中文知识覆盖仍有一定参考价值,但已不适合区分旗舰模型。未查到可靠的 2026 年最高分。",
+    "why_used": "它是中文版的 MMLU,也是中国大模型最早普遍采用的中文知识基准,几乎所有国产模型都报过它的分数。DeepSeek 用它检验基座模型的中文知识面,和英文侧的 MMLU-Pro 对应。",
+    "notes": "同类中文基准还有 CMMLU。C-Eval 的设计直接参照 MMLU,区别是加入了中国特有内容(如毛概、法律职业资格、教师资格等)。",
+    "sources": [
+      {"title": "C-Eval 论文(arXiv:2305.08322)", "url": "https://arxiv.org/abs/2305.08322"},
+      {"title": "C-Eval 官网与榜单", "url": "https://cevalbenchmark.com/"},
+      {"title": "C-Eval 官方仓库", "url": "https://github.com/hkust-nlp/ceval"}
+    ],
+    "confidence": "medium",
+    "caveat": "基本信息凭已有知识写成,未重新联网核对;当前榜单头部的具体分数未核实。"
+  },
+  {
+    "name": "MultiLoKo",
+    "full_name": "MultiLoKo: a multilingual local knowledge benchmark for LLMs spanning 31 languages",
+    "year": "2025",
+    "org": "Meta(Dieuwke Hupkes、Nikolay Bogoychev)",
+    "measures": "模型在 31 种语言里掌握「本地知识」的程度,以及知识能否跨语言迁移。",
+    "format": "31 种语言,每种 500 道从零编写的简答题,共 15,500 题;每种语言对半分为公开的 dev 集和不公开的 test 集(各 250 题)。题目由母语者根据该语言维基百科 2016–2021 年访问量最高的约 6,000 个页面中的段落编写,只保留本地相关的话题。另有人工翻译和机器翻译的平行版本(译成英文,以及从英文译回各语言)。基座模型用 5-shot,对话模型用 0-shot。纯文本,闭卷作答。",
+    "metric": "EM(精确匹配)为主指标,报 31 种语言的平均值;另报 gap(最好与最差语言之差)、MTE(母语效应:用本地语言提问比用英文提问高多少)、LE(本地性效应:题目是本地出的还是从英文翻来的,分数差多少)。",
+    "status": "仍有很大区分度。论文评了 11 个号称多语言的基座和对话模型,最好的 Gemini 2.0 Flash 平均 EM 只有 34.39,最好与最差语言相差约 35 分。test 集不公开,只能通过外部评测方拿分,污染风险低于公开基准。未查到 2026 年前沿模型的权威新成绩。",
+    "why_used": "多数多语言基准是把英文题翻译过去,测到的仍是英语世界的知识;MultiLoKo 的题目是各语言母语者就本地话题原创的,能测出模型是否真的掌握该语言社区的知识。它专门给基座模型设计了 few-shot 提示,所以可以直接用来比较预训练检查点的多语言知识覆盖。",
+    "notes": "论文还发现用机器翻译代替人工翻译会改变语言难度排序并压低所有模型的分数,这是对「翻译版多语言基准」的直接批评。与 MGSM(翻译版数学题)形成对照:一个测本地知识,一个测跨语言推理。",
+    "sources": [
+      {"title": "MultiLoKo 论文(arXiv:2504.10356)", "url": "https://arxiv.org/abs/2504.10356"},
+      {"title": "MultiLoKo 论文 HTML 版(v2)", "url": "https://arxiv.org/html/2504.10356v2"}
+    ],
+    "confidence": "medium",
+    "caveat": "题量、指标和论文内最好成绩已对照论文核实;2026 年的最新成绩和是否有后续版本未查到。"
+  },
+  {
+    "name": "SimpleQA-Verified",
+    "full_name": "SimpleQA Verified: A Reliable Factuality Benchmark to Measure Parametric Knowledge",
+    "year": "2025",
+    "org": "Google DeepMind、Google Research",
+    "measures": "模型不借助工具、只凭参数记忆回答冷门事实题的准确度,以及不知道时是否会老实不答。",
+    "format": "1,000 道简短事实问答题,从 OpenAI SimpleQA 的 4,326 题筛选和修订而来。处理步骤包括:同一来源网页只留一题、语义与 TF-IDF 去重、剔除出版方 robots.txt 不允许抓取的来源、平衡话题和答案类型、核对并修正互相矛盾的来源、给数值答案设可接受范围,最后保留最难的 1,000 题。英文,纯文本,禁用搜索工具。",
+    "metric": "F1:「总体正确率」与「作答题目中的正确率」的调和平均。由自动评分模型把回答判为正确、错误或未作答,乱猜会被扣分。",
+    "status": "仍有区分度。论文发布时(2025 年 9 月)最高是 Gemini 2.5 Pro 的 55.6,GPT-5 为 52.3;据引用 Kaggle 榜单的第三方页面,2025 年 11 月 Gemini 3 Pro Preview 达到 72.1。一旦允许联网搜索,分数接近满分,所以它只在闭卷设置下有意义。题目来自公开的 SimpleQA,存在被训练数据吸收的可能。",
+    "why_used": "原版 SimpleQA 是 2024 年后衡量幻觉与事实性的常用基准,但有标注错误、题目重复和话题偏斜的问题;Verified 版修掉这些问题后,分数更能反映模型的真实知识量。对基座模型来说,它直接衡量预训练记住了多少长尾事实,这和模型规模、训练数据量关系很密切。",
+    "notes": "SimpleQA(OpenAI,2024)的清洗版,命名方式与 SWE-bench Verified 类似。数据、评分代码和榜单托管在 Kaggle,Hugging Face 有副本;arXiv v2 于 2026 年 3 月更新。",
+    "sources": [
+      {"title": "SimpleQA Verified 论文(arXiv:2509.07968)", "url": "https://arxiv.org/abs/2509.07968"},
+      {"title": "Kaggle 上的 SimpleQA Verified 榜单", "url": "https://www.kaggle.com/benchmarks/deepmind/simpleqa-verified"},
+      {"title": "alphaXiv 的 SimpleQA Verified 页面(转引榜单成绩)", "url": "https://alphaxiv.org/benchmarks/google-deepmind/simpleqa-verified"}
+    ],
+    "confidence": "medium",
+    "caveat": "72.1 这个数字来自第三方页面转引的 2025 年 11 月 Kaggle 快照,未能直接打开 Kaggle 榜单确认 2026 年的现状;基座模型 few-shot 下如何评分也未查到公开说明。"
+  },
+  {
+    "name": "SuperGPQA",
+    "full_name": "SuperGPQA: Scaling LLM Evaluation across 285 Graduate Disciplines",
+    "year": "2025",
+    "org": "M-A-P(Multimodal Art Projection)开源社区与 2077AI,有字节跳动 Seed 等机构的作者参与",
+    "measures": "研究生水平的专业知识与推理能力,覆盖面远超常见的几十个学科。",
+    "format": "26,529 道选择题,按 13 个学科门类、72 个一级学科、285 个二级学科组织,包含轻工、农学、服务类等以往基准很少覆盖的领域;平均每题 9.67 个选项;42.33% 的题需要计算或形式推理。英文,纯文本。题目经「专家出题 + 多个 LLM 试答筛选」的人机协同流程过滤掉过易和有歧义的题。",
+    "metric": "准确率(按题平均;也可按学科或难度分层)。",
+    "status": "仍有明显区分度,远未饱和。论文里最高的是 DeepSeek-R1 的 61.82%。未查到可靠的 2026 年最高分。题目和答案已公开,长期看有污染风险。",
+    "why_used": "MMLU 系列只有几十个学科,GPQA 只有几百道题且集中在理化生;SuperGPQA 把研究生水平的考查扩展到 285 个二级学科,题量大、选项多,统计误差小,也更难靠猜。它适合检验预训练数据在长尾专业领域的覆盖,这正是比较基座检查点时关心的东西。",
+    "notes": "名字借自 GPQA,定位是「大规模版 GPQA」;学科体系参照研究生学科目录划分。NeurIPS 2025 收录。",
+    "sources": [
+      {"title": "SuperGPQA 论文(arXiv:2502.14739)", "url": "https://arxiv.org/abs/2502.14739"},
+      {"title": "NeurIPS 2025 论文页面", "url": "https://neurips.cc/virtual/2025/poster/121825"},
+      {"title": "字节跳动 Seed 的论文介绍页", "url": "https://seed.bytedance.com/en/public_papers/supergpqa-scaling-llm-evaluation-across-285-graduate-disciplines"}
+    ],
+    "confidence": "medium",
+    "caveat": "题量和结构已对照论文核实;2026 年的最新最高分未查到,61.82% 是论文发表时的数字。"
+  },
+  {
+    "name": "BBH (BigBench Hard)",
+    "full_name": "BIG-Bench Hard",
+    "year": "2022",
+    "org": "Google Research、斯坦福大学(Suzgun 等)",
+    "measures": "多步语言推理、符号操作和算法类推理能力。",
+    "format": "从 BIG-bench 的 200 多个任务里挑出当时模型低于人类评分者平均水平的 23 个任务(含子任务共 27 个),共 6,511 题;多数任务 250 题。包括布尔表达式、日期推理、物体追踪、逻辑演绎、Dyck 语言、单词排序等。英文,纯文本,选择题或短答案,每个任务配 3 个 few-shot 示例(含 CoT 版本)。",
+    "metric": "各任务准确率(EM)的平均值;常见设置是 3-shot,带或不带 CoT。",
+    "status": "对前沿模型已饱和,这也是 Google DeepMind 在 2025 年推出 BBEH 的直接原因:BBEH 论文指出最新模型在 BBH 上已接近满分。题目和 few-shot 示例公开多年,污染风险高。对不带思维链的基座模型仍能拉开差距。",
+    "why_used": "它是「语言推理」类别里使用最广的 few-shot 套件,任务多而短,自带标准示例,和基座模型的评测方式天然契合。虽然已饱和,保留它便于和历史结果对齐。",
+    "notes": "BIG-bench(2022)的困难子集;BBEH 是它的逐任务升级版,两者在同一份报告里配套出现时,BBH 看延续性,BBEH 看区分度。",
+    "sources": [
+      {"title": "BBH 论文:Challenging BIG-Bench Tasks and Whether Chain-of-Thought Can Solve Them(arXiv:2210.09261)", "url": "https://arxiv.org/abs/2210.09261"},
+      {"title": "BBH 官方仓库", "url": "https://github.com/suzgunmirac/BIG-Bench-Hard"}
+    ],
+    "confidence": "high",
+    "caveat": "基本信息凭已有知识写成;未查 2026 年具体最高分。"
+  },
+  {
+    "name": "BBEH (BigBench Extra Hard)",
+    "full_name": "BIG-Bench Extra Hard",
+    "year": "2025",
+    "org": "Google DeepMind(Kazemi 等)",
+    "measures": "更难的多样化推理能力:多跳、长上下文、抗干扰、学习临时规则、发现推理链中的错误等。",
+    "format": "23 个任务,与 BBH 的 23 个任务一一对应,每个都换成考查相近能力但难度大幅提高的新任务;每个任务 200 题(Disambiguation QA 为 120 题),共约 4,520 题。另有 460 题的 BBEH Mini。英文,纯文本,答案为短文本或选项。",
+    "metric": "主指标是调整后的调和平均准确率:先给每个任务的准确率加 1 再取调和平均,任何一个任务很差都会把总分拉低。BBEH Mini 因每个任务题少,改用微平均。",
+    "status": "仍有区分度。论文发表时(2025 年 2 月)最好的通用模型调和平均只有 9.8%,最好的推理模型(o3-mini high)为 44.8%。2026 年年中的第三方聚合榜单上,厂商自报的最高分在 64%–74% 之间(如 GPT-5 约 64.1,Gemma 4 31B 约 74.4),但这些数字的评测设置不一定可比。题目公开,污染风险会随时间上升。",
+    "why_used": "BBH 已被做到接近满分,BBEH 用同样的任务框架重新拉开差距,Google 自家的 Gemini 和 Gemma 模型卡常报它。调和平均的设计让它能反映「推理能力是否全面」,偏科的模型得分很低。",
+    "notes": "BBH 的直接后继,ACL 2025 收录。对基座模型做 few-shot 评测时这些任务非常难,分数通常很低,适合观察不同检查点的相对差异。",
+    "sources": [
+      {"title": "BBEH 论文(arXiv:2502.19187)", "url": "https://arxiv.org/abs/2502.19187"},
+      {"title": "BBEH 官方仓库", "url": "https://github.com/google-deepmind/bbeh"},
+      {"title": "llm-stats 的 BBEH 聚合榜单", "url": "https://llm-stats.com/benchmarks/big-bench-extra-hard"}
+    ],
+    "confidence": "medium",
+    "caveat": "2026 年的最高分来自第三方聚合站点收集的厂商自报数字,各站领先者不一致,且不清楚报的是调和平均还是微平均;各任务题量凭印象写,未逐项核对。"
+  },
+  {
+    "name": "DROP",
+    "full_name": "Discrete Reasoning Over Paragraphs",
+    "year": "2019",
+    "org": "Allen Institute for AI(AI2)、加州大学欧文分校等",
+    "measures": "阅读理解加离散推理:从段落里找出多个数字或片段,再做加减、计数、比较、排序。",
+    "format": "约 9.6 万道众包问答题,段落取自维基百科(以 NFL 比赛综述和历史类条目为主);开发集约 9,500 题,测试集答案不公开。答案是数字、日期或一到多个文本片段。英文,纯文本。题目用对抗方式收集(出题时用当时的阅读理解模型过滤掉简单题)。",
+    "metric": "F1(按词袋计算,数字不匹配直接记 0)和 EM;LLM 时代多报 few-shot 的 F1。",
+    "status": "已饱和且质量受质疑。前沿模型 F1 早已在 90 上下,超过原论文的人类水平(约 96 F1 的上限附近)。答案标注有不少噪声,评分对输出格式非常敏感;Hugging Face 在 2023 年底因评分归一化问题把 DROP 从 Open LLM Leaderboard 撤下。数据公开多年,污染风险高。",
+    "why_used": "它是「阅读 + 算术」的经典基准,OpenAI simple-evals 等常用评测集里长期保留,用于和旧模型对比。对基座模型来说,它同时考查长段落理解和数值处理,few-shot 续写形式容易实现。",
+    "notes": "属于 SQuAD 之后的对抗式阅读理解一代。由于评分噪声,它更适合看同一评测框架下几个检查点的相对变化,不适合跨报告比较绝对分数。",
+    "sources": [
+      {"title": "DROP 论文(arXiv:1903.00161)", "url": "https://arxiv.org/abs/1903.00161"},
+      {"title": "Hugging Face 博客:Open LLM Leaderboard 上的 DROP 评分问题", "url": "https://huggingface.co/blog/open-llm-leaderboard-drop"}
+    ],
+    "confidence": "medium",
+    "caveat": "基本信息凭已有知识写成,未重新联网核对;人类水平和当前最高分的具体数值未核实。"
+  },
+  {
+    "name": "HellaSwag",
+    "full_name": "HellaSwag: Can a Machine Really Finish Your Sentence?(Harder Endings, Longer contexts, and Low-shot Activities for Situations With Adversarial Generations)",
+    "year": "2019",
+    "org": "华盛顿大学、Allen Institute for AI(Zellers 等)",
+    "measures": "常识推理:给出一段情境,选出最合理的后续句子。",
+    "format": "约 7 万道四选一题,情境来自 ActivityNet 视频字幕和 WikiHow;常用的验证集为 10,042 题。错误选项由语言模型生成,再用对抗过滤(Adversarial Filtering)留下最能骗过当时模型的。英文,纯文本。",
+    "metric": "准确率;基座模型通常比较四个续写的对数似然,选最高的。人类约 95.6%。",
+    "status": "已饱和,前沿模型在 95% 上下,达到或超过人类水平。2025 年的论文《What the HellaSwag?》指出它有严重的构念效度问题:近 40% 的题有语法错误(ActivityNet 部分高达 95.7%),去掉题干后约 68% 的模型预测不变,说明模型在靠选项本身的线索作答;作者筛出 1,525 题的 GoldenSwag 子集作为替代。数据公开多年,污染风险高。",
+    "why_used": "它按续写似然打分,完全不需要对话模板或指令遵循,是评基座模型最自然的基准之一,从 GPT-2 时代一直被沿用。保留它主要是为了和历史基座模型对齐,而不是因为它还能区分强模型。",
+    "notes": "SWAG(2018)的对抗升级版。常与 ARC、WinoGrande、PIQA 等一起出现在基座模型评测表里。",
+    "sources": [
+      {"title": "HellaSwag 论文(arXiv:1905.07830)", "url": "https://arxiv.org/abs/1905.07830"},
+      {"title": "What the HellaSwag? On the Validity of Common-Sense Reasoning Benchmarks(arXiv:2504.07825)", "url": "https://arxiv.org/abs/2504.07825"}
+    ],
+    "confidence": "high",
+    "caveat": "当前最高分只写了大致水平,未查具体数字。"
+  },
+  {
+    "name": "BigCodeBench",
+    "full_name": "BigCodeBench: Benchmarking Code Generation with Diverse Function Calls and Complex Instructions",
+    "year": "2024",
+    "org": "BigCode 社区(莫纳什大学、CSIRO Data61、新加坡管理大学等)",
+    "measures": "按复杂指令写出需要调用多种真实库的 Python 函数的能力,比算法小题更接近日常开发。",
+    "format": "1,140 个函数级 Python 任务,涉及 139 个库(标准库和 pandas、numpy、matplotlib 等第三方库)、7 个领域;每题平均 5.6 个测试用例,分支覆盖率约 99%。两种形式:Complete(给出带详细 docstring 的函数签名让模型补全,适合基座模型)和 Instruct(只给自然语言指令,适合对话模型)。另有 148 题的 Hard 子集。生成的代码在 Docker 沙箱里执行测试。",
+    "metric": "Pass@1:贪心解码生成一次,全部测试通过的任务占比。官方榜单分别报 Complete 和 Instruct,也有校准后的分数(补上模型漏写的函数头)。",
+    "status": "仍有区分度,全集和 Hard 子集都没有被做满。发布之初(2024 年 6 月)GPT-4o 的 Complete 为 61.1、Instruct 为 51.1,人类约 97%。之后的可靠最高分没有查实;第三方页面给出的数字指向不同子集,互相不可比。题目和参考解公开在 GitHub 和 Hugging Face,存在污染可能。",
+    "why_used": "HumanEval 和 MBPP 只考独立的算法小函数且早已饱和,BigCodeBench 被定位为「下一代 HumanEval」:任务要组合多个库的调用,指令更长更复杂,测试更严格。它的 Complete 模式是代码补全形式,所以可以直接评基座模型,这是很多代码基准(如 SWE-bench)做不到的。",
+    "notes": "ICLR 2025 收录。题目基于 ODEX 的种子样例,经「GPT-4 扩写 + 人工精修 + 交叉检查」构建。与 SWE-bench 这类智能体基准互补:它不需要代码仓库上下文和多步操作。",
+    "sources": [
+      {"title": "BigCodeBench 论文(arXiv:2406.15877)", "url": "https://arxiv.org/abs/2406.15877"},
+      {"title": "Hugging Face 博客:BigCodeBench: The Next Generation of HumanEval", "url": "https://huggingface.co/blog/leaderboard-bigcodebench"},
+      {"title": "BigCodeBench 官方榜单", "url": "https://bigcode-bench.github.io/"}
+    ],
+    "confidence": "medium",
+    "caveat": "未能打开官方榜单确认 2026 年的最高分;参与机构列表不完整,Hard 子集题量(148)凭印象写。"
+  },
+  {
+    "name": "HumanEval",
+    "full_name": "HumanEval(出自论文 Evaluating Large Language Models Trained on Code)",
+    "year": "2021",
+    "org": "OpenAI",
+    "measures": "根据函数签名和 docstring 补全一个独立 Python 函数的基础编程能力。",
+    "format": "164 道手写 Python 编程题,每题有函数签名、docstring、参考实现和平均约 7.7 个单元测试;难度相当于简单的面试题或入门算法题。生成的代码需要实际执行来跑测试。",
+    "metric": "Pass@k:生成 k 个候选,至少一个通过全部测试的题目占比;现在基本只报 Pass@1。",
+    "status": "已饱和,前沿模型的 Pass@1 多年前就在 90% 以上。题目和参考解自 2021 年起公开在 GitHub,被大量转载和翻译,污染几乎不可避免。原始测试用例偏少,EvalPlus 的 HumanEval+ 把测试扩充约 80 倍后,许多模型的通过率明显下降,说明原版会放过错误解。只有 164 题,一题就是 0.6 个百分点,统计噪声大。",
+    "why_used": "它是代码生成评测的起点,由 Codex 论文提出,Pass@k 这个指标也由它普及。题目本身就是补全形式,最适合评基座模型;保留它主要是为了和过去几年的所有模型对齐。",
+    "notes": "衍生版本很多:HumanEval+(更多测试)、HumanEval-X 和 MultiPL-E(多语言)、HumanEval-V 等。BigCodeBench 是公认的后继者之一。",
+    "sources": [
+      {"title": "Codex 论文(arXiv:2107.03374)", "url": "https://arxiv.org/abs/2107.03374"},
+      {"title": "HumanEval 官方仓库", "url": "https://github.com/openai/human-eval"},
+      {"title": "EvalPlus(HumanEval+)榜单", "url": "https://evalplus.github.io/leaderboard.html"}
+    ],
+    "confidence": "high",
+    "caveat": "基本信息凭已有知识写成;未查 2026 年具体最高分。"
+  },
+  {
+    "name": "GSM8K",
+    "full_name": "Grade School Math 8K",
+    "year": "2021",
+    "org": "OpenAI(Cobbe 等)",
+    "measures": "小学水平数学应用题的多步算术推理能力。",
+    "format": "约 8,500 道由人工编写的英文应用题(训练集 7,473 题,测试集 1,319 题),每题需要 2–8 步四则运算,附带分步解答和最终数值答案。纯文本。",
+    "metric": "准确率:最终数值与标准答案精确匹配;常见设置是 8-shot CoT。",
+    "status": "已饱和,前沿模型在 95%–97% 以上,剩余错误里相当一部分来自原题的标注错误或歧义。污染与过拟合有实证:Scale AI 的 GSM1k(2024)重新出了一套同难度的新题,部分模型掉分明显(最多约 13 个百分点);苹果的 GSM-Symbolic(2024)发现只改数字或加入无关信息,分数就会下降。GSM8K-Platinum(2025)修正了测试集里的错题。",
+    "why_used": "它是数学推理最基础、引用最多的基准,也是思维链(CoT)提示法的标准试验场。对基座模型,它检验 few-shot 下能否稳定完成多步计算;对旗舰模型已没有区分度,主要起回归检查的作用。",
+    "notes": "MGSM 是它的多语言翻译版;MATH 是更难的一档。三者常一起出现在基座模型的数学评测里。",
+    "sources": [
+      {"title": "GSM8K 论文(arXiv:2110.14168)", "url": "https://arxiv.org/abs/2110.14168"},
+      {"title": "GSM1k:A Careful Examination of Large Language Model Performance on Grade School Arithmetic(arXiv:2405.00332)", "url": "https://arxiv.org/abs/2405.00332"},
+      {"title": "GSM-Symbolic(arXiv:2410.05229)", "url": "https://arxiv.org/abs/2410.05229"}
+    ],
+    "confidence": "high",
+    "caveat": "基本信息凭已有知识写成;GSM1k 的掉分幅度和 GSM8K-Platinum 的细节未重新核对。"
+  },
+  {
+    "name": "MATH",
+    "full_name": "MATH(Mathematics Aptitude Test of Heuristics,出自论文 Measuring Mathematical Problem Solving With the MATH Dataset)",
+    "year": "2021",
+    "org": "加州大学伯克利分校等(Hendrycks 等)",
+    "measures": "高中竞赛水平的数学解题能力。",
+    "format": "12,500 道题(训练集 7,500,测试集 5,000),取自 AMC、AIME 等美国中学数学竞赛,分 7 个科目(初等代数、代数、数论、计数与概率、几何、中级代数、微积分预备)和 5 个难度等级;每题有完整的 LaTeX 分步解答,最终答案放在 \\boxed{} 里。英文,纯文本。常用的还有 OpenAI 抽取的 500 题子集 MATH-500。",
+    "metric": "准确率:对最终答案做规范化后精确匹配(或判断数学等价)。",
+    "status": "已基本饱和,带推理的前沿模型在 MATH-500 上达到 95% 以上。题目来自公开竞赛,解答在 Art of Problem Solving 等网站可查,污染风险高。2025 年 1 月因 AoPS 的版权(DMCA)投诉,原数据集被 Hugging Face 下架,此后多以镜像或 MATH-500 的形式流通。对不带长思维链的基座模型,难度等级 4–5 的题仍有区分度。",
+    "why_used": "它是 GSM8K 之上的一档数学基准,有科目和难度分层,能看出模型在哪类题上薄弱。在 FrontierMath、IMO 类评测出现之前,它是衡量数学推理的主要标尺,保留它便于和早期基座模型对比。",
+    "notes": "AGIEval 里的 MATH 填空任务取自同一数据集。评分时的答案规范化规则对分数影响不小,不同框架的结果不宜直接比较。",
+    "sources": [
+      {"title": "MATH 论文(arXiv:2103.03874)", "url": "https://arxiv.org/abs/2103.03874"},
+      {"title": "MATH 官方仓库", "url": "https://github.com/hendrycks/math"}
+    ],
+    "confidence": "medium",
+    "caveat": "基本信息和 DMCA 下架一事凭已有知识写成,未重新联网核对;DeepSeek 报告用的是全量 5,000 题还是 MATH-500 未确认。"
+  },
+  {
+    "name": "MGSM",
+    "full_name": "Multilingual Grade School Math",
+    "year": "2022",
+    "org": "Google Research(Shi 等)",
+    "measures": "多语言环境下的小学数学应用题推理能力,即推理能力能否跨语言保持。",
+    "format": "从 GSM8K 测试集取 250 道题,由人工翻译成 10 种语言(孟加拉语、德语、西班牙语、法语、日语、俄语、斯瓦希里语、泰卢固语、泰语、中文),加上英文原题共 11 种语言、2,750 题;每种语言附 8 个 few-shot 示例。纯文本。",
+    "metric": "准确率(最终数值精确匹配),报各语言平均;通常用 8-shot,带母语或英文的 CoT。",
+    "status": "对前沿模型已接近饱和,平均分在 90% 以上,差距主要出现在斯瓦希里语、泰卢固语、孟加拉语等低资源语言上。每种语言只有 250 题,统计噪声较大;题目是 GSM8K 的翻译,继承了 GSM8K 的污染和标注错误问题。未查具体的 2026 年最高分。",
+    "why_used": "它是最简单直接的「多语言推理」检查:同一批题换语言,分数掉多少一目了然。OpenAI simple-evals 等常用评测集收录了它,所以各家模型的数字容易对齐。对基座模型,它能反映多语言预训练数据的配比效果。",
+    "notes": "GSM8K 的多语言翻译版,出自论文《Language Models are Multilingual Chain-of-Thought Reasoners》。与 MultiLoKo 互补:MGSM 的内容与文化无关,只测推理的跨语言迁移。",
+    "sources": [
+      {"title": "MGSM 论文:Language Models are Multilingual Chain-of-Thought Reasoners(arXiv:2210.03057)", "url": "https://arxiv.org/abs/2210.03057"},
+      {"title": "MGSM 数据(google-research/url-nlp)", "url": "https://github.com/google-research/url-nlp/tree/main/mgsm"}
+    ],
+    "confidence": "high",
+    "caveat": "基本信息凭已有知识写成;未查 2026 年具体最高分。"
+  }
+]
