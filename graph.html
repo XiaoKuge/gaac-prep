@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>知识图谱</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="nav"><div class="nav-inner"><a class="brand" href="index.html">vLLM × DeepSeek-V4.1-Flash<small>中文读本</small></a><nav class="nav-links"><a href="index.html">首页</a><a href="post-1.html">① 5 倍吞吐</a><a href="post-2.html">② 大规模服务</a><a href="report.html">技术报告</a><a href="benchmarks.html">基准调研</a><a href="agentx.html">AgentX 调研</a><a href="research.html">概念调研</a><a href="graph.html" class="on">知识图谱</a></nav></div></header>
+<style>
+  :root { --c-org: #b7791f; --c-bench: #0f6e63; --c-engine: #6b4fbb; --c-model: #c2410c; --c-hw: #2f6fb5; --c-tech: #b0447e; --c-metric: #6f7d1c; }
+  @media (prefers-color-scheme: dark) { :root { --c-org: #e0b060; --c-bench: #5cc5b6; --c-engine: #b09cf0; --c-model: #fb923c; --c-hw: #7fb2ea; --c-tech: #e58ab8; --c-metric: #b5c453; } }
+  .kg-wrap { max-width: 1320px; margin: 0 auto; padding: 0 20px 80px; }
+  .kg-bar { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin: 6px 0 12px; font-size: 14px; }
+  .kg-bar .grp { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .kg-bar .lbl { color: var(--ink-3); font-size: 12.5px; margin-right: 2px; }
+  .kg-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border-radius: 999px; border: 1px solid var(--line);
+             background: var(--surface); cursor: pointer; user-select: none; font-size: 13.5px; color: var(--ink); }
+  .kg-chip input { display: none; }
+  .kg-chip .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .kg-chip.off { opacity: .42; }
+  .kg-bar input[type=search] { padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface);
+             color: var(--ink); font: inherit; font-size: 14px; width: 200px; }
+  .kg-btn { padding: 5px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2);
+            font: inherit; font-size: 13.5px; cursor: pointer; }
+  .kg-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .kg-main { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; }
+  @media (max-width: 980px) { .kg-main { grid-template-columns: 1fr; } }
+  .kg-canvas { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
+               height: min(78vh, 820px); min-height: 520px; box-shadow: var(--shadow); }
+  .kg-canvas svg { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+  .kg-canvas svg.drag { cursor: grabbing; }
+  .kg-hint { position: absolute; left: 14px; bottom: 10px; font-size: 12px; color: var(--ink-3); pointer-events: none; }
+  .kg-edge { stroke: var(--ink-3); stroke-opacity: .22; stroke-width: 1; }
+  .kg-edge.hi { stroke: var(--accent); stroke-opacity: .9; stroke-width: 1.6; }
+  .kg-edge.dim { stroke-opacity: .04; }
+  .kg-node circle { stroke: var(--surface); stroke-width: 1.5; cursor: pointer; }
+  .kg-node text { font-family: var(--sans); font-size: 11px; fill: var(--ink-2); pointer-events: none; paint-order: stroke;
+                  stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
+  .kg-node.big text { font-size: 13px; font-weight: 600; fill: var(--ink); }
+  .kg-node.dim { opacity: .12; }
+  .kg-node.min text { display: none; }
+  svg.zoomed .kg-node.min text, .kg-node.min.show text, .kg-node.min.hit text, .kg-node.min.sel text { display: block; }
+  .kg-node.sel circle { stroke: var(--ink); stroke-width: 2.5; }
+  .kg-node.hit circle { stroke: var(--gold); stroke-width: 3; }
+  .kg-side { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 18px 14px;
+             max-height: min(78vh, 820px); overflow-y: auto; font-size: 14px; box-shadow: var(--shadow); }
+  .kg-side h3 { margin: 4px 0 2px; font-size: 19px; line-height: 1.35; }
+  .kg-side .ty { font-size: 12px; font-weight: 600; letter-spacing: .06em; }
+  .kg-side .desc { color: var(--ink-2); margin: 8px 0 10px; }
+  .kg-side .rels { list-style: none; padding: 0; margin: 8px 0 0; }
+  .kg-side .rels li { padding: 6px 0; border-top: 1px solid var(--line); display: flex; gap: 8px; align-items: baseline; }
+  .kg-side .rels .r { color: var(--ink-3); font-size: 12.5px; flex: 0 0 auto; }
+  .kg-side .rels a { cursor: pointer; }
+  .kg-side .empty { color: var(--ink-3); }
+  .kg-sugg { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 14px; margin-top: 14px; }
+  .kg-sugg .s { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .kg-sugg .s h4 { margin: 0 0 6px; font-size: 16px; }
+  .kg-sugg .s p { margin: 0 0 6px; font-size: 14px; color: var(--ink-2); }
+  .kg-sugg .s .ex { font-size: 13px; color: var(--ink-3); }
+  .kg-sugg .pri { display: inline-block; font-size: 11.5px; font-weight: 600; padding: 1px 8px; border-radius: 999px; margin-left: 6px;
+                  background: var(--accent-soft); color: var(--accent); vertical-align: 2px; }
+  .kg-sugg .pri.b { background: var(--gold-soft); color: var(--gold); }
+  .kg-sugg .pri.c { background: var(--surface-2); color: var(--ink-3); }
+</style>
+
+<main class="kg-wrap">
+<div class="hero" style="padding-bottom:14px">
+  <div class="eyebrow">知识图谱</div>
+  <h1>公司、模型、硬件、引擎、技术、基准与指标</h1>
+  <p class="lead">从站内的两篇博客、技术报告、基准调研和 AgentX 调研里整理出的 163 个节点、298 条关系:48 个公司与机构、13 个模型、14 种硬件、14 个推理引擎与框架、13 项优化技术、51 个基准、10 个指标。</p>
+</div>
+
+<div class="kg-bar">
+  <div class="grp" id="kg-types"><span class="lbl">节点</span></div>
+  <div class="grp" id="kg-rels"><span class="lbl">关系</span></div>
+  <div class="grp">
+    <input type="search" id="kg-q" placeholder="搜索节点…">
+    <button class="kg-btn" id="kg-reset">重置视图</button>
+  </div>
+</div>
+
+<div class="kg-main">
+  <div class="kg-canvas">
+    <svg id="kg-svg"><g id="kg-view"><g id="kg-edges"></g><g id="kg-nodes"></g></g></svg>
+    <div class="kg-hint">滚轮缩放(放大后显示全部标签)· 拖动空白处平移 · 拖动节点调整位置 · 点击节点看关系</div>
+  </div>
+  <aside class="kg-side" id="kg-side"></aside>
+</div>
+
+<section style="margin-top:44px">
+  <h2 style="font-size:24px;margin:0 0 6px">还可以加入的节点类别</h2>
+  <p style="color:var(--ink-2);max-width:820px;margin:0">这一版已经加入模型、硬件、优化技术、指标四类。下面几类还没有加,按加入后能多回答多少问题排序:</p>
+  <div class="kg-sugg">
+    <div class="s"><h4>模型架构组件<span class="pri b">其次</span></h4>
+      <p>技术报告的核心。能把"为什么这个模型便宜"和"引擎为它做了哪些专门优化"连起来。</p>
+      <div class="ex">CED、CSA2、Single-Pass mHC、Engram、FP4 KV 缓存、分层稀疏索引器</div></div>
+    <div class="s"><h4>内核与组件库<span class="pri b">其次</span></h4>
+      <p>DeepSeek 开源的内核被 vLLM 集成,是"DeepInfer 与 vLLM 为什么接近"的直接原因。现在这层关系只能压缩成一条"贡献内核"的边。</p>
+      <div class="ex">FlashMLA、DeepGEMM、DeepEP、DeepSelect、TileLang、MegaAttention、MegaMoE、Mega-mHC、FlashInfer</div></div>
+    <div class="s"><h4>智能体脚手架<span class="pri b">其次</span></h4>
+      <p>技术报告用八种脚手架跑同一批题;AgentX 的数据全部来自其中一种。它是连接"模型能力基准"和"推理性能基准"的桥。</p>
+      <div class="ex">Claude Code、Codex、OpenCode、Pi、mini-SWE、DeepSeek Harness</div></div>
+    <div class="s"><h4>数据集与语料<span class="pri c">可选</span></h4>
+      <p>把基准和它背后的数据分开。对 AgentX 尤其有用,因为同一个基准有完整版和 256k 版两套数据。</p>
+      <div class="ex">cc-traces-weka-062126、其 256k 变体、SPEED-Bench 编程类、阿里 KV 缓存追踪</div></div>
+    <div class="s"><h4>文档与来源<span class="pri c">可选</span></h4>
+      <p>每条关系挂到支持它的文章或代码文件上,图谱就可以审计。代价是节点数会翻倍。</p>
+      <div class="ex">两篇 vLLM 博客、技术报告、AgentX 发布文章、InferenceX 仓库里的规则文档</div></div>
+    <div class="s"><h4>事件与版本<span class="pri c">可选</span></h4>
+      <p>这个领域的结论带日期才有意义。事件节点能表达"8 月 21 日排名翻转""2 月弃用 SWE-bench Verified"这类时间点。</p>
+      <div class="ex">AgentX 1.0 发布、V4.1-Flash 发布、DeepInfer 开源、各基准的弃用与审计</div></div>
+    <div class="s"><h4>人物<span class="pri c">可选</span></h4>
+      <p>创始人、基准作者、签核配方的厂商工程师。对理解治理和利益关系有用,但材料里的人物信息零散。</p>
+      <div class="ex">Dylan Patel、Simon Mo、Woosuk Kwon、Kaichao You</div></div>
+  </div>
+  <p style="color:var(--ink-2);max-width:820px;margin-top:18px">还缺的一块是成绩本身:某模型在某硬件上用某引擎达到什么水平。这是一条连着三个节点的事实,现在的图只能表示两两之间的关系。要表达它,需要把每个成绩点也做成节点。</p>
+</section>
+</main>
+
+<script src="assets/graph-data.js"></script>
+<script>
+(function () {
+  var G = window.GRAPH, NS = "http://www.w3.org/2000/svg";
+  var svg = document.getElementById("kg-svg"), view = document.getElementById("kg-view");
+  var gE = document.getElementById("kg-edges"), gN = document.getElementById("kg-nodes"), side = document.getElementById("kg-side");
+  var css = getComputedStyle(document.documentElement);
+  var color = {}; Object.keys(G.types).forEach(function (k) { color[k] = css.getPropertyValue("--c-" + k).trim(); });
+
+  var byId = {}, nodes = G.nodes, edges = G.edges;
+  nodes.forEach(function (n) { byId[n.id] = n; n.deg = 0; n.nb = {}; });
+  edges.forEach(function (e) { byId[e.s].deg++; byId[e.t].deg++; byId[e.s].nb[e.t] = 1; byId[e.t].nb[e.s] = 1; });
+  nodes.forEach(function (n) { n.r = 4.5 + Math.sqrt(n.deg) * 1.9; });
+
+  // ---- 初始位置:三类各占一个扇区,度数高的靠内 ----
+  var W = 1200, H = 800, anchor = { org: [-760, 160], bench: [760, 200], engine: [-120, -470], model: [300, -60], hw: [-330, 560], tech: [-640, -500], metric: [330, 620] };
+  nodes.forEach(function (n, i) {
+    var a = anchor[n.type], ang = i * 2.399963, rad = 80 + 22 * Math.sqrt(i);
+    n.x = a[0] + Math.cos(ang) * rad; n.y = a[1] + Math.sin(ang) * rad; n.vx = 0; n.vy = 0;
+  });
+
+  // ---- 力导向模拟 ----
+  var alpha = 1, shownType = {}, shownRel = {};
+  Object.keys(G.types).forEach(function (k) { shownType[k] = 1; });
+  Object.keys(G.relGroups).forEach(function (k) { shownRel[k] = 1; });
+  function visN(n) { return shownType[n.type]; }
+  function visE(e) { return shownRel[e.g] && visN(byId[e.s]) && visN(byId[e.t]); }
+
+  function tick() {
+    var vn = nodes.filter(visN), i, j, a, b, dx, dy, d2, d, f;
+    for (i = 0; i < vn.length; i++) {
+      a = vn[i];
+      for (j = i + 1; j < vn.length; j++) {
+        b = vn[j]; dx = a.x - b.x; dy = a.y - b.y; d2 = dx * dx + dy * dy + 0.01;
+        if (d2 > 490000) continue;
+        d = Math.sqrt(d2); f = 5200 / d2 * alpha;
+        var minD = a.r + b.r + 26;
+        if (d < minD) f += (minD - d) * 0.12;
+        dx /= d; dy /= d; a.vx += dx * f; a.vy += dy * f; b.vx -= dx * f; b.vy -= dy * f;
+      }
+      var an = anchor[a.type];
+      a.vx += (an[0] - a.x) * 0.014 * alpha; a.vy += (an[1] - a.y) * 0.014 * alpha;
+    }
+    edges.forEach(function (e) {
+      if (!visE(e)) return;
+      a = byId[e.s]; b = byId[e.t]; dx = b.x - a.x; dy = b.y - a.y; d = Math.sqrt(dx * dx + dy * dy) || 1;
+      var rest = 120 + Math.min(a.deg, b.deg) * 2, k = 0.016 * alpha / Math.sqrt(Math.min(a.deg, b.deg));
+      f = (d - rest) * k; dx /= d; dy /= d;
+      a.vx += dx * f; a.vy += dy * f; b.vx -= dx * f; b.vy -= dy * f;
+    });
+    vn.forEach(function (n) {
+      if (n.fixed) { n.vx = n.vy = 0; return; }
+      n.vx *= 0.82; n.vy *= 0.82; n.x += n.vx; n.y += n.vy;
+    });
+    alpha *= 0.992;
+  }
+
+  // ---- 绘制 ----
+  var elE = [], elN = {};
+  edges.forEach(function (e) {
+    var l = document.createElementNS(NS, "line"); l.setAttribute("class", "kg-edge");
+    var t = document.createElementNS(NS, "title"); t.textContent = byId[e.s].label + " — " + e.rel + " → " + byId[e.t].label; l.appendChild(t);
+    gE.appendChild(l); elE.push(l);
+  });
+  nodes.forEach(function (n) {
+    var g = document.createElementNS(NS, "g"); g.setAttribute("class", "kg-node" + (n.deg >= 8 ? " big" : "") + (n.deg <= 2 ? " min" : ""));
+    var c = document.createElementNS(NS, "circle"); c.setAttribute("r", n.r); c.setAttribute("fill", color[n.type]);
+    var t = document.createElementNS(NS, "text"); t.setAttribute("x", n.r + 4); t.setAttribute("y", 4); t.textContent = n.label;
+    g.appendChild(c); g.appendChild(t); gN.appendChild(g); elN[n.id] = g;
+    g.addEventListener("pointerdown", function (ev) { startDrag(ev, n); });
+    g.addEventListener("pointerenter", function () { if (!sel) highlight(n); });
+    g.addEventListener("pointerleave", function () { if (!sel) highlight(null); });
+  });
+
+  function draw() {
+    edges.forEach(function (e, i) {
+      var l = elE[i], on = visE(e); l.style.display = on ? "" : "none"; if (!on) return;
+      var a = byId[e.s], b = byId[e.t];
+      l.setAttribute("x1", a.x); l.setAttribute("y1", a.y); l.setAttribute("x2", b.x); l.setAttribute("y2", b.y);
+    });
+    nodes.forEach(function (n) {
+      var g = elN[n.id]; g.style.display = visN(n) ? "" : "none";
+      g.setAttribute("transform", "translate(" + n.x + "," + n.y + ")");
+    });
+  }
+
+  // ---- 视图变换 ----
+  var tx = 0, ty = 0, sc = 1;
+  function applyView() { view.setAttribute("transform", "translate(" + tx + "," + ty + ") scale(" + sc + ")"); svg.classList.toggle("zoomed", sc >= 1.15); }
+  function fit() {
+    var vn = nodes.filter(visN); if (!vn.length) return;
+    var x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+    vn.forEach(function (n) { x0 = Math.min(x0, n.x - 30); x1 = Math.max(x1, n.x + 110); y0 = Math.min(y0, n.y - 20); y1 = Math.max(y1, n.y + 20); });
+    var r = svg.getBoundingClientRect(); if (!r.width) return;
+    sc = Math.min(r.width / (x1 - x0), r.height / (y1 - y0), 1.6);
+    tx = (r.width - (x0 + x1) * sc) / 2; ty = (r.height - (y0 + y1) * sc) / 2; applyView();
+  }
+  svg.addEventListener("wheel", function (ev) {
+    ev.preventDefault(); var r = svg.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top;
+    var k = Math.exp(-ev.deltaY * 0.0015), ns = Math.max(0.25, Math.min(4, sc * k)); k = ns / sc;
+    tx = mx - (mx - tx) * k; ty = my - (my - ty) * k; sc = ns; applyView();
+  }, { passive: false });
+
+  var drag = null, moved = false;
+  function startDrag(ev, n) {
+    ev.stopPropagation(); drag = { n: n, x: ev.clientX, y: ev.clientY }; moved = false; n.fixed = true;
+    svg.setPointerCapture(ev.pointerId);
+  }
+  svg.addEventListener("pointerdown", function (ev) { if (drag) return; drag = { pan: true, x: ev.clientX, y: ev.clientY }; moved = false; svg.classList.add("drag"); svg.setPointerCapture(ev.pointerId); });
+  svg.addEventListener("pointermove", function (ev) {
+    if (!drag) return; var dx = ev.clientX - drag.x, dy = ev.clientY - drag.y;
+    if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
+    drag.x = ev.clientX; drag.y = ev.clientY;
+    if (drag.pan) { tx += dx; ty += dy; applyView(); }
+    else { drag.n.x += dx / sc; drag.n.y += dy / sc; alpha = Math.max(alpha, 0.25); }
+  });
+  svg.addEventListener("pointerup", function () {
+    if (!drag) return;
+    if (drag.n) { drag.n.fixed = false; if (!moved) select(drag.n); }
+    else if (!moved) select(null);
+    drag = null; svg.classList.remove("drag");
+  });
+
+  // ---- 高亮与详情 ----
+  var sel = null;
+  function highlight(n) {
+    nodes.forEach(function (m) { var near = !!n && (m === n || n.nb[m.id]); elN[m.id].classList.toggle("dim", !!n && !near); elN[m.id].classList.toggle("show", near); });
+    edges.forEach(function (e, i) {
+      var on = n && (e.s === n.id || e.t === n.id);
+      elE[i].classList.toggle("hi", !!on); elE[i].classList.toggle("dim", !!n && !on);
+    });
+  }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function select(n) {
+    if (sel) elN[sel.id].classList.remove("sel");
+    sel = n; highlight(n);
+    if (!n) { overview(); return; }
+    elN[n.id].classList.add("sel");
+    var out = [], inn = [];
+    edges.forEach(function (e) {
+      if (e.s === n.id) out.push('<li><span class="r">' + esc(e.rel) + ' →</span><a data-id="' + esc(e.t) + '">' + esc(byId[e.t].label) + "</a></li>");
+      if (e.t === n.id) inn.push('<li><a data-id="' + esc(e.s) + '">' + esc(byId[e.s].label) + '</a><span class="r">→ ' + esc(e.rel) + "</span></li>");
+    });
+    side.innerHTML = '<div class="ty" style="color:' + color[n.type] + '">' + G.types[n.type] + (n.sub ? " · " + esc(n.sub) : "") + "</div>" +
+      "<h3>" + esc(n.label) + "</h3>" + (n.desc ? '<div class="desc">' + esc(n.desc) + "</div>" : "") +
+      (n.link ? '<a href="' + esc(n.link) + '">在站内查看详情 →</a>' : "") +
+      '<ul class="rels">' + out.join("") + inn.join("") + "</ul>";
+    side.querySelectorAll("a[data-id]").forEach(function (a) { a.addEventListener("click", function () { select(byId[a.getAttribute("data-id")]); }); });
+  }
+  function overview() {
+    var top = nodes.slice().sort(function (a, b) { return b.deg - a.deg; }).slice(0, 12);
+    side.innerHTML = '<div class="ty" style="color:var(--ink-3)">总览</div><h3>连接最多的节点</h3>' +
+      '<div class="desc">点击图上或下面的任一节点,查看它的全部关系。</div><ul class="rels">' +
+      top.map(function (n) { return '<li><a data-id="' + esc(n.id) + '" style="color:' + color[n.type] + '">' + esc(n.label) + '</a><span class="r">' + n.deg + " 条关系</span></li>"; }).join("") + "</ul>";
+    side.querySelectorAll("a[data-id]").forEach(function (a) { a.addEventListener("click", function () { select(byId[a.getAttribute("data-id")]); }); });
+  }
+
+  // ---- 筛选与搜索 ----
+  function chip(host, key, label, dot, state) {
+    var c = document.createElement("label"); c.className = "kg-chip";
+    c.innerHTML = (dot ? '<span class="dot" style="background:' + dot + '"></span>' : "") + label;
+    c.addEventListener("click", function () { state[key] = state[key] ? 0 : 1; c.classList.toggle("off", !state[key]); alpha = Math.max(alpha, 0.5); if (sel && !visN(sel)) select(null); });
+    host.appendChild(c);
+  }
+  Object.keys(G.types).forEach(function (k) {
+    chip(document.getElementById("kg-types"), k, G.types[k] + " " + nodes.filter(function (n) { return n.type === k; }).length, color[k], shownType);
+  });
+  Object.keys(G.relGroups).forEach(function (k) {
+    chip(document.getElementById("kg-rels"), k, G.relGroups[k] + " " + edges.filter(function (e) { return e.g === k; }).length, null, shownRel);
+  });
+  document.getElementById("kg-q").addEventListener("input", function (ev) {
+    var q = ev.target.value.trim().toLowerCase(), first = null;
+    nodes.forEach(function (n) { var hit = q && n.label.toLowerCase().indexOf(q) >= 0; elN[n.id].classList.toggle("hit", !!hit); if (hit && !first) first = n; });
+    if (first) select(first);
+  });
+  document.getElementById("kg-reset").addEventListener("click", function () { select(null); fit(); });
+
+  // ---- 启动:先静态跑一段让布局稳定,再进入动画循环 ----
+  for (var k = 0; k < 700; k++) tick();
+  draw(); fit(); overview();
+  (function loop() { if (alpha > 0.02) { tick(); draw(); } requestAnimationFrame(loop); })();
+  window.addEventListener("resize", fit);
+})();
+</script>
+
+</body>
+</html>

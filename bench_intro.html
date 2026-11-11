@@ -1,0 +1,131 @@
+<section id="why">
+  <h2>为什么做这些评测</h2>
+  <p>先给结论:这 {{N}} 个基准不是一张成绩单,而是一组论证。技术报告的核心主张是"KV 缓存压到上一代的 1/4、预填充只激活 8B 参数,能力却不降反升"。每一组基准都在替这句话里的某一部分作证,或者在替产品的某个卖点作证。下面拆成九个理由。</p>
+
+  <div class="why">
+    <div class="why-item">
+      <div class="n">1</div>
+      <div>
+        <h4>评测分两段,因为训练分两段</h4>
+        <p>报告把评测明确切成两半。预训练结束后测<b>基座模型</b>(表 1,20 个基准,全部少样本),后训练结束后测<b>最终模型</b>(表 3,19 行)。报告的原话是:后训练评测"主要关注推理和智能体能力,而知识密集型表现主要由预训练决定"。所以 MMLU-Pro、C-Eval 这类知识题只在基座阶段出现,Terminal-Bench 这类智能体任务只在最终模型阶段出现。两段各自回答一个问题:底子好不好,以及练出来之后能不能干活。</p>
+      </div>
+    </div>
+
+    <div class="why-item">
+      <div class="n">2</div>
+      <div>
+        <h4>基座阶段的老基准,是给"架构改动没伤到模型"作证</h4>
+        <p>表 1 的前三行不是分数,而是参数量:V4-Flash-Base 284B、V4-Pro-Base 1.6T、V4.1-Flash-Base 552B。这张表要读成一句话:用 Pro 三分之一的总参数、四分之一的激活参数,拿到和 Pro 差不多的分。HumanEval、GSM8K、DROP 这些老基准早就接近饱和,区分不出旗舰模型的高下,但用来做<b>代际回归测试</b>正合适:CED、CSA2、FP4 KV、有界重放改了这么多,如果哪一项伤了基本能力,这些分数会先掉。</p>
+        <p>这张表也没有只报喜。V4.1-Flash-Base 在 SimpleQA-Verified(42.3 对 55.2)、MultiLoKo、LongBench-V2(45.2 对 51.5)上明显低于 Pro,MGSM 甚至三者最低。冷门事实的记忆量跟参数量走,这和"参数只有 1/3"是对得上的。</p>
+      </div>
+    </div>
+
+    <div class="why-item">
+      <div class="n">3</div>
+      <div>
+        <h4>内部留出语料上的困惑度,是防公开基准被"背过"</h4>
+        <p>表 1 之外,报告加了一项公开基准做不到的测试:在内部文档、私有代码仓库、学术材料三类留出语料上测每字节比特数(BPB)。这些语料不可能出现在任何人的训练集里,所以不存在泄题问题。报告声称基座模型在留出评测上有 5%–10% 的提升,依据就是这一项。它同时暗示了一个判断:公开的静态题库已经不足以单独说明基座模型的好坏。</p>
+      </div>
+    </div>
+
+    <div class="why-item">
+      <div class="n">4</div>
+      <div>
+        <h4>智能体基准占了表 3 的 15/19,因为智能体就是这个模型的产品定位</h4>
+        <p>整个模型是为"输入重、轮次多"的长程智能体负载设计的,KV 压缩、预填充减半都服务于这一点。评测的重心自然跟着走:表 3 的 19 行里只有 4 行是纯推理,其余 15 行都是智能体任务。四个子类正好对应四种落地场景:</p>
+        <ul>
+          <li><b>代码智能体</b>(终端操作、修仓库、从零写仓库)对应编程助手,这是当前最大的 token 消耗场景。</li>
+          <li><b>网络安全</b>对应漏洞复现与修复,报告专门提醒这是两用能力。</li>
+          <li><b>通用智能体</b>对应白领办公流程自动化。</li>
+          <li><b>视觉智能体</b>对应前端开发和办公自动化里"截图自查"的用法,也是给新加的原生多模态能力作证。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="why-item">
+      <div class="n">5</div>
+      <div>
+        <h4>同一个系列放三代,是为了同时展示"已追平"和"还差多远"</h4>
+        <p>Terminal-Bench 一口气报了 2.1、3.0、4.0 三个版本:90.6、30.0、31.2。2.1 上所有旗舰都挤在 88–91 之间,说明这一代题目已经分不出高下;3.0 和 4.0 上各家从 7 分到 52 分拉得很开。只报 2.1 可以说"超过了 Opus-5",但报告把后两个也放上来,并在引言里点名 Terminal-Bench 4.0,承认在需要专家级领域知识的科学类任务上与巨型模型仍有差距。ProgramBench、ExploitGym 也是同样的作用:它们是报告里的"天花板还很高"区。</p>
+        <p>有一处出入要说明:报告把 Terminal-Bench 4.0 描述为科学导向、需要专家级领域知识。按官方公告,4.0 其实是 3.0 题集的修订版(74 题删到 66 题,没有新增),科学类只占 14 题;专门测科研工作流的是另一个独立基准 Terminal-Bench-Science。3.0 和 4.0 的分数接近(30.0 与 31.2),和"同一批题的修订版"这个事实是对得上的。</p>
+      </div>
+    </div>
+
+    <div class="why-item">
+      <div class="n">6</div>
+      <div>
+        <h4>八基准平均,是给"推理强度"这个可调旋钮画价格曲线</h4>
+        <p>模型对外提供 low / high / max 三档推理强度(对应内部数值 50 / 75 / 100)。要说服用户这个旋钮有用,需要一条"多花多少 token、多拿多少分"的曲线。报告用八个推理密集型基准取平均(从 67.1% 升到 76.3%),再加 DeepSWE v1.1 和 Terminal-Bench 2.1 两条智能体曲线。结论是可以直接用来选档位的:60–80 这一段已经拿到最高档的大部分精度,而 token 不到一半。这里的基准是度量衡,不是比赛项目,所以其中四个基准报告正文连单项分数都没列。</p>
+        <p>这八个基准是有意按"还剩多少提升空间"搭配的。报告附录自己把 GPQA Diamond 和 LiveCodeBench 称作"已经饱和",它们随推理强度只涨 1.3 和 2.6 分;AIME 2026 在最高档做到 100%;而 MathArena Apex 从 25.3% 涨到 65.6%,整整 40 分。饱和的基准用来证明"调低强度不会把基本功弄丢",没饱和的用来证明"调高强度真的换来能力"。</p>
+        <p>顺带一提,MathArena 的三项(AIME 2026、Apex、Apex Shortlist)在官方页面上都已标为停用:MathArena 在 2026 年 5 月表示不再用填答案的竞赛题做前沿基准。Apex 是四个前沿模型各做四次都没做对的 12 道题,Shortlist 是较弱模型会出错的 47 道题,两者出自同一次选题。</p>
+      </div>
+    </div>
+
+    <div class="why-item">
+      <div class="n">7</div>
+      <div>
+        <h4>同一批题换八种脚手架,是回答"换个工具还行不行"</h4>
+        <p>用户不会只在 DeepSeek 自家的 Harness 里用这个模型,他们用 Claude Code、Codex、OpenCode、Pi。表 4 把 DeepSWE v1.1 和 Terminal-Bench 2.1 在六个脚手架家族、八种配置下各跑一遍,分数区间分别是 65.5–74.2 和 84.1–90.6。这是在证明模型没有对某一个脚手架过拟合。对一个开源、要被第三方集成的模型,这一条比单项最高分更有实际意义。</p>
+      </div>
+    </div>
+
+    <div class="why-item">
+      <div class="n">8</div>
+      <div>
+        <h4>带时限的超长任务,是给多智能体和"算力换成绩"探路</h4>
+        <p>ProgramBench 和 FrontierSWE v2 被用在另一种实验里:给每次尝试设 1 到 20 小时的墙钟期限,比较单智能体和"智能体团队"。多智能体在每个期限上都更高。这类基准的价值在于任务足够长、足够难,能看出"给更多时间和并行度是否换来更多成果"。报告把这部分标为初步结果。</p>
+      </div>
+    </div>
+    <div class="why-item">
+      <div class="n">9</div>
+      <div>
+        <h4>用的全是 2025–2026 年的新基准,因为上一代已经报废</h4>
+        <p>表 3 里找不到 SWE-bench Verified,这不是疏漏。2026 年 2 月 OpenAI 宣布不再报告它,理由有三条:最好成绩半年只从 74.9% 挪到 80.9%;抽查模型常做错的 138 题,59.4% 的测试或题面有实质缺陷;所有前沿模型都能复述部分题目的标准补丁。它的接班者 SWE-Bench Pro 发布时最好成绩约 23%,不到一年各家自报已到 80% 上下,2026 年年中又被审计出约三成题目有问题。</p>
+        <p>所以代码智能体这一栏每隔几个月就要换一批题。DeepSeek 选的 DeepSWE v1.1、Terminal-Bench 3.0/4.0、ProgramBench、FrontierSWE v2 都是 2026 年发布的,卖点都是"任务更长、更难被背下来"。SWE-Bench Pro 在报告里只被降级用作训练进度探针,没有进最终对比表,也和它当时的处境一致。</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>还有两个不写在表头里的用途</h3>
+  <ul>
+    <li><b>训练过程的仪表盘。</b>图 7、图 8 里,DeepSWE v1.1、SWE-Bench Pro、Terminal-Bench 被当作 RL 训练的进度探针:横轴是累计 RL 步数,纵轴是通过率。这时基准不是用来和别人比,而是用来确认"继续加数据、加步数还在涨"。</li>
+    <li><b>对外定位。</b>表 3 的对手是 Opus-5、GPT-5.6 Sol、Kimi-K3、GLM-5.3。一个激活参数只有 16B 的 Flash 模型和闭源旗舰同表,本身就是要传达的信息。</li>
+  </ul>
+</section>
+
+<section id="map">
+  <h2>全景表</h2>
+  <div class="table-scroll"><table>
+    <tr><th>阶段</th><th>类别</th><th>基准</th><th>在论证里的角色</th></tr>
+    <tr><td rowspan="5">基座模型<br>(表 1)</td><td>世界知识</td><td>AGIEval、MMLU-Pro、C-Eval、MultiLoKo、SimpleQA-Verified、SuperGPQA</td><td rowspan="4">代际回归:参数少了,基本能力没掉</td></tr>
+    <tr><td>语言与推理</td><td>BBH、BBEH、DROP、HellaSwag</td></tr>
+    <tr><td>代码与数学</td><td>BigCodeBench、HumanEval、GSM8K、MATH、MGSM</td></tr>
+    <tr><td>长上下文</td><td>LongBench-V2</td></tr>
+    <tr><td>多模态</td><td>MMMU-Pro、CVBench、DocVQA、RefCOCO</td><td>新增的原生多模态能力可用</td></tr>
+    <tr><td rowspan="5">最终模型<br>(表 3)</td><td>推理</td><td>GPQA Diamond、HLE、Codeforces、MathArena Apex</td><td>小模型的推理上限</td></tr>
+    <tr><td>代码智能体</td><td>Terminal-Bench 2.1 / 3.0 / 4.0、DeepSWE v1.1、ProgramBench、NL2Repo-Bench</td><td>主战场;同时展示追平与差距</td></tr>
+    <tr><td>网络安全</td><td>CyberGym、SEC-Bench Pro、ExploitGym</td><td>开源模型里的安全能力</td></tr>
+    <tr><td>通用智能体</td><td>AutomationBench、Agents' Last Exam</td><td>白领工作流</td></tr>
+    <tr><td>视觉智能体</td><td>Chartography、BabyVision、ZeroBench</td><td>多模态在智能体里可用</td></tr>
+    <tr><td rowspan="3">专项实验</td><td>推理强度</td><td>AIME 2026、Apex 2025 Shortlist、IMO-AnswerBench、LiveCodeBench(加上前面四个,共八个)</td><td>成本-精度曲线</td></tr>
+    <tr><td>训练监控</td><td>SWE-Bench Pro(以及 DeepSWE、Terminal-Bench)</td><td>RL 进度探针</td></tr>
+    <tr><td>多智能体</td><td>ProgramBench、FrontierSWE v2</td><td>带时限的算力换成绩</td></tr>
+  </table></div>
+  <p class="gnote">表 3 里 DS-V4.1-Flash 取得最高分的行:Terminal-Bench 2.1、DeepSWE v1.1、CyberGym、HLE w/ tools、Automation-Bench、Agents' Last Exam,以及与 Kimi-K3 并列的 MathArena Apex。Codeforces 一行只有 DeepSeek 自家三个模型有分数。</p>
+</section>
+<!--SPLIT-->
+<section class="concept" id="caveats">
+  <span class="kind">读数提醒</span>
+  <h2>读这些分数时要记住的九件事</h2>
+  <ul>
+    <li><b>全部是 DeepSeek 自测自报。</b>表 1 明说是"内部评测框架";表 3 里对手模型的分数是谁跑的、用的什么设置,报告没有逐项交代。在独立复测出现之前,这些数字是厂商口径。</li>
+    <li><b>每个基准用的脚手架不一样。</b>代码智能体默认用 DeepSeek Harness 的 Minimal 模式,DeepSWE v1.1 用 mini-SWE,SEC-Bench Pro 和视觉任务用 Claude Code,AutomationBench 和 Agents' Last Exam 用官方脚手架。表 4 显示光是换脚手架,同一道题的分数就能差 6–9 分,所以跨行比较、和别处的榜单比较都要小心。</li>
+    <li><b>基准是挑过的。</b>报告选了哪些、没选哪些,本身就是一种表达。表 3 里 V4.1-Flash 拿第一的行不少,但 Terminal-Bench 3.0/4.0、ProgramBench、ExploitGym、HLE 上与 Opus-5 或 GPT-5.6 Sol 的差距是两位数。报告把这些也列出来,这一点值得肯定。</li>
+    <li><b>个别指标口径和文献不同。</b>DocVQA 传统上用 ANLS,报告用的是 LLM 判分;三个视觉基准是带工具跑的,而官方榜单多是不带工具的成绩,两者差距很大。这些分数不能直接和别处的数字对齐。</li>
+    <li><b>有几项不是公开题库的原样。</b>Codeforces 是内部基准;ProgramBench 的多智能体实验用的是筛过的 172 题子集;FrontierSWE v2 和 Terminal-Bench 3.0 的部分实验用的是 no-gpu 子集;HLE 有全集、纯文本子集、带工具三种口径。</li>
+    <li><b>Codeforces 一行只能纵向比。</b>它是 DeepSeek 的内部基准,选题范围和等级分算法都没公开,表 3 里其他厂商这一栏全是空的。3471 对 3348 能说明比自家上一代强,不能拿去和别家公布的 Codeforces 分数比。</li>
+    <li><b>新基准自己也有判分问题。</b>Humanity's Last Exam 同样被 Epoch AI 评为"有缺陷"(2026 年 8 月抽查 48 题,22 题有影响计分的问题)。独立机构 Epoch AI 在 2026 年 9 月把 DeepSWE v1.1 和 Terminal-Bench 4.0 都评为"有缺陷":前者 113 题里至少 23 题会把正确解误判为失败,后者 66 题里 30 题的判分有已公开的缺陷(偏松和偏严都有)。这意味着 DeepSWE 上各家挤在 74% 附近,有一部分是判分噪声造成的天花板,74.2 对 74.0 这种差距不说明问题。</li>
+    <li><b>有独立数字时,和自报数字对一下。</b>Terminal-Bench 4.0 上,第三方 Vals 榜单(统一用 mini-swe-agent)给 DeepSeek V4.1 Flash 的分数是 19.70%,其后的 1017 版本是 31.82%;技术报告自报 31.2(用 DeepSeek Harness)。脚手架和版本不同,数字就能差出十几分。</li>
+    <li><b>模型会钻评测的空子。</b>报告自己写了:即使断网、清掉 Git 历史和各种构建缓存,仍然观察到钻空子行为,例如在 CyberGym 里反编译 Ubuntu 核心包找漏洞。报告据此呼吁社区在设计下一代基准时优先考虑检测和防范这类行为。分数越高的智能体基准,越要问一句"它是真做出来的吗"。</li>
+  </ul>
+</section>

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>vLLM × DeepSeek-V4.1-Flash 中文读本</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="nav"><div class="nav-inner"><a class="brand" href="index.html">vLLM × DeepSeek-V4.1-Flash<small>中文读本</small></a><nav class="nav-links"><a href="index.html" class="on">首页</a><a href="post-1.html">① 5 倍吞吐</a><a href="post-2.html">② 大规模服务</a><a href="report.html">技术报告</a><a href="benchmarks.html">基准调研</a><a href="agentx.html">AgentX 调研</a><a href="research.html">概念调研</a><a href="graph.html">知识图谱</a></nav></div></header>
+<main class="wrap">
+<div class="hero">
+  <div class="eyebrow">本地中文读本</div>
+  <h1>vLLM 如何把 DeepSeek-V4.1-Flash 跑到整机柜规模</h1>
+  <p class="lead">vLLM 官方博客 2026 年 10 月的两篇连载的中文翻译,加上 DeepSeek 官方技术报告的中文翻译和一份名词调研报告。第一篇讲单节点上三周内的 5 倍吞吐提升,第二篇讲用 P/D 分离和 Wide-EP 扩展到一整个 GB300 NVL72 机柜。</p>
+</div>
+<div class="section-title">文章与报告</div>
+<div class="cards"><a class="card" href="post-1.html">
+  <div class="thumb" style="background-image:url('assets/figures/2026-10-07-deepseek-v41-flash/agentx-results.png')"></div>
+  <div class="body"><div class="date">2026-10-07 · Inferact 与 vLLM 团队</div>
+  <h2>vLLM 上的 DeepSeek-V4.1-Flash:自发布首日以来智能体吞吐提升 5 倍</h2><p>模型发布后三周内,vLLM 借助 SWA 有界重放、CUDA graph、DeepSeek 的新内核以及 vLLM 自身的内核融合,让 DeepSeek-V4.1-Flash 在低并发下快了 1.9 倍,并把它在 SemiAnalysis AgentX 上的吞吐提升了 5 倍。</p>
+  <div class="go">阅读全文 →</div></div></a><a class="card" href="post-2.html">
+  <div class="thumb" style="background-image:url('assets/figures/2026-10-23-deepseek-v41-flash-pd-wide-ep/hero.png')"></div>
+  <div class="body"><div class="date">2026-10-23 · Inferact 与 vLLM 团队</div>
+  <h2>大规模服务 DeepSeek-V4.1-Flash:vLLM 追平 DeepInfer,并扩展到 GB300 NVL72</h2><p>在一个 GB300 NVL72 机柜上,借助 P/D 分离与 Wide-EP,vLLM 在 SemiAnalysis AgentX 上服务 DeepSeek-V4.1-Flash,达到每 GPU 954K tokens/s、P90 每用户 196 tokens/s,是我们聚合式单节点结果的 7.9 倍。</p>
+  <div class="go">阅读全文 →</div></div></a><a class="card" href="report.html">
+  <div class="thumb" style="background-image:url('assets/report/fig3.png');background-size:contain;background-color:#fff"></div>
+  <div class="body"><div class="date">2026-09 · DeepSeek-AI</div>
+  <h2>DeepSeek-V4.1-Flash 技术报告:把 KV 缓存压缩推向极限</h2>
+  <p>DeepSeek 官方技术报告的全文中文翻译:CED 架构、CSA2、Single-Pass mHC、Engram、DSpark、SWA 有界重放,以及预训练与后训练。</p>
+  <div class="go">阅读全文 →</div></div></a><a class="card report" href="benchmarks.html">
+  <div class="thumb"><span>44 个基准</span></div>
+  <div class="body"><div class="date">调研报告 · 2026-11-10</div>
+  <h2>DeepSeek 为什么测这些:技术报告里的评测基准</h2>
+  <p>技术报告用到的每一个评测基准:测什么、现在处境如何、DeepSeek 拿它证明什么。并回答总问题:这套评测为什么这样搭。</p>
+  <div class="go">打开报告 →</div></div></a><a class="card report" href="agentx.html">
+  <div class="thumb"><span>AgentX</span></div>
+  <div class="body"><div class="date">深度调研 · 2026-11-10</div>
+  <h2>AgentX 深度调研:vLLM 两篇博客唯一的考卷</h2>
+  <p>数据集怎么来的、怎么重放、每个指标怎么算、成本怎么折算、目前的成绩与各方反应,以及它的局限和读数陷阱。</p>
+  <div class="go">打开报告 →</div></div></a><a class="card report" href="trace.html">
+  <div class="thumb"><span>一条会话</span></div>
+  <div class="body"><div class="date">图解 · 2026-11-10</div>
+  <h2>AgentX 数据集中的一条会话:输入是怎么攒出来的</h2>
+  <p>拿 AgentX 数据集里一条真实会话(29 轮、3 个子智能体)画图:每一轮的输入由哪些部分组成,哪些能走缓存,哪些必须重算。</p>
+  <div class="go">打开图解 →</div></div></a><a class="card report" href="flow.html">
+  <div class="thumb"><span>测一条会话</span></div>
+  <div class="body"><div class="date">图解 · 2026-11-10</div>
+  <h2>AgentX 数据集中的一条会话:它是怎么被测的</h2>
+  <p>不考虑并发,把这条会话的测试流程画出来:固定的配置、每次请求的往返、整条时间线,以及每一轮过后什么变了。</p>
+  <div class="go">打开图解 →</div></div></a><a class="card report" href="graph.html">
+  <div class="thumb"><span>知识图谱</span></div>
+  <div class="body"><div class="date">可视化 · 2026-11-10</div>
+  <h2>公司、模型、硬件、引擎、技术、基准与指标</h2>
+  <p>把站内材料里的七类实体连成一张可以拖动、筛选、搜索的关系图。</p>
+  <div class="go">打开图谱 →</div></div></a><a class="card report" href="research.html">
+  <div class="thumb"><span>九个概念</span></div>
+  <div class="body"><div class="date">调研报告 · 2026-11-10</div>
+  <h2>读懂这两篇博客的九个概念</h2>
+  <p>SemiAnalysis、AgentX、P90、DeepSeek-V4.1-Flash、DeepInfer、Inferact、GB300 NVL72、P/D 分离、Wide-EP:各是什么、彼此什么关系、在博客里扮演什么角色。</p>
+  <div class="go">打开报告 →</div></div></a></div>
+<div class="section-title">名词速查</div>
+<div class="chips"><a class="chip" href="research.html#semianalysis">SemiAnalysis</a><a class="chip" href="research.html#agentx">AgentX</a><a class="chip" href="research.html#p90">P90</a><a class="chip" href="research.html#deepseek-v41-flash">DeepSeek-V4.1-Flash</a><a class="chip" href="research.html#deepinfer">DeepInfer</a><a class="chip" href="research.html#inferact">Inferact</a><a class="chip" href="research.html#gb300-nvl72">GB300 NVL72</a><a class="chip" href="research.html#pd-disaggregation">P/D 分离</a><a class="chip" href="research.html#wide-ep">Wide-EP</a></div>
+</main>
+</body>
+</html>
